@@ -5,6 +5,7 @@
 It guides agents (and users) through formal triage, evidence collection, platform info, share-link validation, and a paste-ready report for the in-product **Report an issue** flow — without inventing support channels or claiming to file tickets on xAI servers.
 
 [![Validate skill](https://github.com/FineComputer14451/xai-bug-reporter/actions/workflows/validate.yml/badge.svg?branch=main)](https://github.com/FineComputer14451/xai-bug-reporter/actions/workflows/validate.yml)
+[![Dependabot](https://img.shields.io/badge/Dependabot-enabled-025E8C?logo=dependabot&logoColor=white)](https://github.com/FineComputer14451/xai-bug-reporter/network/updates)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Shell](https://img.shields.io/badge/shell-bash-4EAA25?logo=gnubash&logoColor=white)](#scripts)
 [![Last commit](https://img.shields.io/github/last-commit/FineComputer14451/xai-bug-reporter)](https://github.com/FineComputer14451/xai-bug-reporter/commits/main)
@@ -166,7 +167,9 @@ xai-bug-reporter/
 ├── SKILL.md                      # Agent instructions + frontmatter
 ├── README.md
 ├── LICENSE
-├── .github/workflows/validate.yml
+├── .github/
+│   ├── dependabot.yml            # Weekly Actions updates
+│   └── workflows/validate.yml
 ├── assets/
 │   ├── report-checklist.md       # Human-facing template
 │   └── report.env.example        # KEY=VALUE sample for scripts
@@ -187,9 +190,9 @@ xai-bug-reporter/
 
 ---
 
-## CI
+## CI & Dependabot
 
-On every push and pull request to `main` (and via **workflow_dispatch**):
+**CI** runs on every push and pull request to `main` (and via **workflow_dispatch**):
 
 - Required files present
 - `SKILL.md` frontmatter checks
@@ -197,6 +200,8 @@ On every push and pull request to `main` (and via **workflow_dispatch**):
 - Smoke tests: severity scoring, share-link parse/validate, assemble + validate-report, platform collection
 
 See [Actions → Validate skill](https://github.com/FineComputer14451/xai-bug-reporter/actions/workflows/validate.yml).
+
+**Dependabot** (`.github/dependabot.yml`) opens weekly PRs for GitHub Actions updates (`actions/checkout`, etc.). This repo has no npm/pip package ecosystems.
 
 ---
 
