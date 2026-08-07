@@ -7,9 +7,8 @@ description: Encodes the official xAI Grok bug-reporting and human-support proce
 
 Guide users through the official xAI / Grok bug-report and support process. Prefer the in-product **Report an issue** path. Collect required details, run formal triage, validate completeness, and produce a paste-ready report. Never invent support channels.
 
-> **Note / Disclaimer**  
-> This skill is an **independent project**. It is **not affiliated with, endorsed by, sponsored by, or officially connected to xAI**.  
-> **Grok**, **Grok Build**, **Grok Imagine**, and related marks are trademarks of their respective owners.
+> **Note**  
+> Independent project — **not affiliated with, endorsed by, sponsored by, or officially connected to xAI**. See **Legal Disclaimer** at the end of this file.
 
 ## In-chat activation (critical)
 
@@ -121,10 +120,18 @@ Follow `references/triage-protocol.md`.
 - Fixes usually ship in product updates; keep the app and browser updated.
 - A complete report with share link + steps to reproduce has the highest chance of useful triage.
 
-## Disclaimer
+## Legal Disclaimer
 
-The **xai-bug-reporter** skill is an **independent project**. It is **not affiliated with, endorsed by, sponsored by, or officially connected to xAI**.
+**Independent project.** The **xai-bug-reporter** skill is an independent, community-oriented project. It is **not affiliated with, endorsed by, sponsored by, or officially connected to xAI** in any way.
 
-**Grok**, **Grok Build**, **Grok Imagine**, and related marks are trademarks of their respective owners.
+**Trademarks.** **Grok**, **Grok Build**, **Grok Imagine**, **xAI**, and related names, logos, and marks are trademarks or registered trademarks of their respective owners. Use of these names is for identification and descriptive purposes only and does not imply any endorsement or official relationship.
 
-This skill documents and automates preparation for the publicly documented support path only. It does not submit tickets on behalf of users and does not claim official status.
+**No official status.** This skill does not represent xAI, does not speak for xAI support or engineering, and does not provide official customer support. It only helps users prepare materials for the publicly documented support channels (in-product **Report an issue** and billing receipt email).
+
+**No submission authority.** There is no public xAI bug-submission API. This skill **does not** file tickets, open cases, or transmit reports to xAI on the user’s behalf. The user remains solely responsible for submitting any report through official product UI or email paths.
+
+**No warranty.** The software and documentation are provided “AS IS”, without warranty of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose, and noninfringement. In no event shall the authors or copyright holders be liable for any claim, damages, or other liability arising from use of the skill or reliance on its guidance.
+
+**Accuracy of process notes.** References to xAI’s FAQ and product flows are based on publicly available documentation at the time of writing. Official processes may change; users should verify current instructions in the product and on docs.x.ai.
+
+**License.** Use of this skill is governed by the MIT License included with the project.
