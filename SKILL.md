@@ -7,6 +7,10 @@ description: Encodes the official xAI Grok bug-reporting and human-support proce
 
 Guide users through the official xAI / Grok bug-report and support process. Prefer the in-product **Report an issue** path. Collect required details, run formal triage, validate completeness, and produce a paste-ready report. Never invent support channels.
 
+> **Note / Disclaimer**  
+> This skill is an **independent project**. It is **not affiliated with, endorsed by, sponsored by, or officially connected to xAI**.  
+> **Grok**, **Grok Build**, **Grok Imagine**, and related marks are trademarks of their respective owners.
+
 ## In-chat activation (critical)
 
 This skill is intentionally designed to activate **inside the same conversation where the bug occurred**.
@@ -116,3 +120,11 @@ Follow `references/triage-protocol.md`.
 - No guaranteed response timeline.
 - Fixes usually ship in product updates; keep the app and browser updated.
 - A complete report with share link + steps to reproduce has the highest chance of useful triage.
+
+## Disclaimer
+
+The **xai-bug-reporter** skill is an **independent project**. It is **not affiliated with, endorsed by, sponsored by, or officially connected to xAI**.
+
+**Grok**, **Grok Build**, **Grok Imagine**, and related marks are trademarks of their respective owners.
+
+This skill documents and automates preparation for the publicly documented support path only. It does not submit tickets on behalf of users and does not claim official status.

@@ -10,6 +10,10 @@ It guides agents (and users) through formal triage, evidence collection, platfor
 [![Shell](https://img.shields.io/badge/shell-bash-4EAA25?logo=gnubash&logoColor=white)](#scripts)
 [![Last commit](https://img.shields.io/github/last-commit/FineComputer14451/xai-bug-reporter)](https://github.com/FineComputer14451/xai-bug-reporter/commits/main)
 
+> **Note / Disclaimer**  
+> The **xai-bug-reporter** skill is an **independent project**. It is **not affiliated with, endorsed by, sponsored by, or officially connected to xAI**.  
+> **Grok**, **Grok Build**, **Grok Imagine**, and related marks are trademarks of their respective owners.
+
 ---
 
 ## Why this skill exists
@@ -202,6 +206,16 @@ xai-bug-reporter/
 See [Actions → Validate skill](https://github.com/FineComputer14451/xai-bug-reporter/actions/workflows/validate.yml).
 
 **Dependabot** (`.github/dependabot.yml`) opens weekly PRs for GitHub Actions updates (`actions/checkout`, etc.). This repo has no npm/pip package ecosystems.
+
+---
+
+## Disclaimer
+
+The **xai-bug-reporter** skill is an **independent project**. It is **not affiliated with, endorsed by, sponsored by, or officially connected to xAI**.
+
+**Grok**, **Grok Build**, **Grok Imagine**, and related marks are trademarks of their respective owners.
+
+This skill documents and automates preparation for the publicly documented support path only. It does not submit tickets on behalf of users and does not claim official status.
 
 ---
 
