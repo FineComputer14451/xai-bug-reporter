@@ -1,14 +1,16 @@
 # Formal triage protocol
 
-## 1. Automated severity scoring (mandatory first step)
+## 1. Severity scoring (mandatory first step)
 
-Run:
+Apply the severity table below, then confirm Severity with the user. On grok.com / iOS / Android, NEVER run bash.
+
+Grok Build MAY suggest a value with:
 
 ```bash
-bash scripts/score-severity.sh "user problem description here"
+bash "$SKILL_DIR/scripts/score-severity.sh" "user problem description here"
 ```
 
-The script returns a **suggested** severity plus rationale. Always confirm with the user before locking the value.
+The script (when used) returns a **suggested** severity plus rationale. Always confirm with the user before locking the value.
 
 | Severity  | Definition |
 |-----------|------------|
@@ -33,7 +35,7 @@ One or two sentences: what the user cannot do, how often it happens, and whether
 
 ## 4. Agent decision rules
 
-- If the user is vague, run the scorer on whatever description exists, then ask clarifying questions before finalizing Severity/Category.
+- If the user is vague, score from the description (Grok Build MAY run the scorer), then ask clarifying questions before finalizing Severity/Category.
 - High or Critical → strongly push for share link of the failing chat + screenshot + exact reproduction steps.
 - Never override a user’s explicit severity choice; document disagreement if the scorer differs.
 - Always emit a `=== TRIAGE ===` block in the finished report.

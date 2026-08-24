@@ -200,6 +200,112 @@ else
   echo "OK   project scripts/ is a symlink to helpers"
 fi
 
+# --- consumer zip: SKILL.md present, no scripts/ ---
+
+expect_rc 0 "pack-skill.sh succeeds" \
+  bash "$SCRIPTS/pack-skill.sh"
+
+ZIP="$ROOT/dist/xai-bug-reporter.zip"
+ran=$((ran + 1))
+if [[ ! -f "$ZIP" ]]; then
+  fail=$((fail + 1))
+  echo "FAIL consumer zip missing at $ZIP"
+else
+  echo "OK   consumer zip exists"
+fi
+
+zip_list() {
+  if command -v unzip >/dev/null 2>&1; then
+    unzip -l "$1"
+  else
+    python3 - "$1" <<'PY'
+import sys
+import zipfile
+
+with zipfile.ZipFile(sys.argv[1]) as zf:
+    for name in zf.namelist():
+        print(name)
+PY
+  fi
+}
+
+zip_extract() {
+  if command -v unzip >/dev/null 2>&1; then
+    unzip -p "$1" "$2"
+  else
+    python3 - "$1" "$2" <<'PY'
+import sys
+import zipfile
+
+with zipfile.ZipFile(sys.argv[1]) as zf:
+    sys.stdout.write(zf.read(sys.argv[2]).decode())
+PY
+  fi
+}
+
+ran=$((ran + 1))
+listing=$(zip_list "$ZIP" 2>&1 || true)
+if ! echo "$listing" | grep -q -- 'xai-bug-reporter/SKILL.md'; then
+  fail=$((fail + 1))
+  echo "FAIL zip missing xai-bug-reporter/SKILL.md"
+  echo "$listing" | head -20
+else
+  echo "OK   zip contains xai-bug-reporter/SKILL.md"
+fi
+
+ran=$((ran + 1))
+if echo "$listing" | grep -q -- 'scripts/'; then
+  fail=$((fail + 1))
+  echo "FAIL zip listing contains scripts/"
+  echo "$listing" | head -40
+else
+  echo "OK   zip does not contain scripts/"
+fi
+
+ran=$((ran + 1))
+if ! echo "$listing" | grep -q -- 'xai-bug-reporter/references/official-process.md'; then
+  fail=$((fail + 1))
+  echo "FAIL zip missing references/official-process.md"
+else
+  echo "OK   zip contains official-process.md"
+fi
+
+ran=$((ran + 1))
+skill_body=$(zip_extract "$ZIP" xai-bug-reporter/SKILL.md 2>/dev/null || true)
+if ! echo "$skill_body" | grep -q -- 'NEVER run bash'; then
+  fail=$((fail + 1))
+  echo "FAIL packed SKILL.md missing consumer NEVER-run-scripts instruction"
+else
+  echo "OK   packed SKILL.md tells consumer hosts NEVER run scripts"
+fi
+
+ran=$((ran + 1))
+if echo "$skill_body" | grep -q -- 'Always run helpers'; then
+  fail=$((fail + 1))
+  echo "FAIL packed SKILL.md 'Always run helpers' can leak bash onto grok.com"
+else
+  echo "OK   packed SKILL.md does not say Always run helpers"
+fi
+
+ran=$((ran + 1))
+compat=$(echo "$skill_body" | grep -E '^compatibility:' || true)
+if echo "$compat" | grep -qi -- 'Requires bash'; then
+  fail=$((fail + 1))
+  echo "FAIL packed compatibility requires bash"
+  echo "$compat"
+else
+  echo "OK   packed compatibility does not require bash"
+fi
+
+ran=$((ran + 1))
+share_guide=$(zip_extract "$ZIP" xai-bug-reporter/references/share-link-guide.md 2>/dev/null || true)
+if echo "$share_guide" | grep -q -- 'Always run `scripts/'; then
+  fail=$((fail + 1))
+  echo "FAIL packed share-link-guide tells hosts to Always run scripts"
+else
+  echo "OK   packed share-link-guide does not Always run scripts"
+fi
+
 echo
 if [[ "$fail" -ne 0 ]]; then
   echo "$fail/$ran FAILED"

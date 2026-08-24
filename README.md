@@ -15,35 +15,30 @@ It guides agents (and users) through formal triage, evidence collection, platfor
 
 ---
 
-## Why this skill exists
+## Install
 
-xAI’s public path for product bugs is:
+### grok.com (web)
 
-1. **Report an issue** inside Grok (Web / iOS / Android)
-2. For billing: reply to the **receipt / invoice email**
+Official: Skills are on grok.com; create by conversation, upload a file, or Skill Creator. [grok.com/skills](https://grok.com/skills)
 
-There is **no public bug-submission API**. This skill automates everything *up to* a validated paste package, then hands the user clear in-product steps.
+1. Upload this repo’s [`SKILL.md`](https://github.com/FineComputer14451/xai-bug-reporter/blob/main/SKILL.md) (use **Raw** to download), or the zip from `bash scripts/pack-skill.sh` (`dist/xai-bug-reporter.zip`).
+2. Ask Skill Creator to save it as skill `xai-bug-reporter`.
+3. Invoke with “report a bug” / “use xai-bug-reporter”.
 
-Canonical reference: [xAI FAQ — How do I report a bug or reach a human?](https://docs.x.ai/grok/faq#how-do-i-report-a-bug-or-reach-a-human)
+Community-reported UI (not a product spec): Skills & connectors → add skill; Customize > Skills.
 
----
+This project does **not** claim listing in an official xAI skill store.
 
-## Features
+### Android (and iOS)
 
-| Area | What you get |
-|------|----------------|
-| **In-chat activation** | Works *inside* the conversation where the bug happened — no forced new chat |
-| **Formal triage** | Severity (Critical/High/Medium/Low), category, impact statement |
-| **Automated severity scoring** | Keyword-based suggestion via `score-severity.sh` (always confirm with user) |
-| **Platform collection** | OS, kernel, GPU, browsers (`collect-platform-info.sh`, human or `--json`) |
-| **Share-link pipeline** | Parse + structural/live validation for `grok.com/share/...` and `x.com/i/grok/share/...` |
-| **Field enforcement** | Required fields must be present before “ready to submit” |
-| **Paste-ready package** | `assemble-report.sh` + `prepare-submission.sh` → BEGIN/END report block |
-| **Hard boundaries** | Never invent unofficial inboxes; no ticket-filing claims |
+Skills are account-scoped and available on grok.com, iOS, and Android ([Grok Skills](https://x.ai/news/grok-skills)).
 
----
+- Open Skills in the Grok app and upload `SKILL.md` or the zip, **or**
+- Install on grok.com while signed into the same account.
 
-## Install (Grok Build)
+Do not invent exact Android Settings labels. Bash scripts do not run in the Grok app; the `SKILL.md` body is enough.
+
+### Grok Build (CLI)
 
 Grok Build loads a directory that contains `SKILL.md`. The folder name **must** be `xai-bug-reporter` (matches `name` in `SKILL.md`).
 
@@ -80,6 +75,36 @@ chmod +x ~/.grok/skills/xai-bug-reporter/scripts/*.sh
 
 ---
 
+## Why this skill exists
+
+xAI’s public path for product bugs is:
+
+1. **Report an issue** inside Grok (Web / iOS / Android)
+2. For billing: reply to the **receipt / invoice email**
+
+There is **no public bug-submission API**. This skill automates everything *up to* a validated paste package, then hands the user clear in-product steps.
+
+Canonical reference: [xAI FAQ — How do I report a bug or reach a human?](https://docs.x.ai/grok/faq#how-do-i-report-a-bug-or-reach-a-human)
+
+---
+
+## Features
+
+Bash helpers (`scripts/*.sh`) are **Grok Build optional**. On grok.com / iOS / Android the agent follows `SKILL.md` only and must not run those scripts.
+
+| Area | What you get |
+|------|----------------|
+| **In-chat activation** | Works *inside* the conversation where the bug happened — no forced new chat |
+| **Formal triage** | Severity (Critical/High/Medium/Low), category, impact statement |
+| **Automated severity scoring** | Keyword suggestion via `score-severity.sh` (**Grok Build optional**; always confirm with user) |
+| **Platform collection** | Ask the user for device / OS / app version; Grok Build may run `collect-platform-info.sh` |
+| **Share-link pipeline** | Structural host + share-id check; Grok Build may add live HTTP validation |
+| **Field enforcement** | Required fields must be present before “ready to submit” |
+| **Paste-ready package** | Assemble the BEGIN/END block in chat; Grok Build: `assemble-report.sh` + `prepare-submission.sh` |
+| **Hard boundaries** | Never invent unofficial inboxes; no ticket-filing claims |
+
+---
+
 ## Activation (for agents)
 
 Triggers automatically on phrases such as:
@@ -103,12 +128,14 @@ Activate xai-bug-reporter
 
 ## Typical agent flow
 
+On grok.com / iOS / Android, follow `SKILL.md` and do not run scripts. On Grok Build you may use the helpers below.
+
 1. Confirm in-chat context (bug here vs elsewhere).
-2. Triage — `score-severity.sh` → confirm Severity + Category + Impact.
-3. Evidence — share link of the failing chat (`parse-share-link.sh` + `validate-share-link.sh`) and/or screenshot.
-4. Required fields — email, tier, platform, system/app info, description, steps.
+2. Triage — severity table in `SKILL.md` (Grok Build: `score-severity.sh`) → confirm Severity + Category + Impact.
+3. Evidence — share link of the failing chat (structural id check; Grok Build: `parse-share-link.sh` + `validate-share-link.sh`) and/or screenshot.
+4. Required fields — email, tier, platform, system/app info, description, steps. Ask the user; do not probe the host on grok.com / mobile.
 5. Missing-field loop — list gaps; do not emit a complete report until required fields exist.
-6. Assemble & validate — `prepare-submission.sh` or assemble + `validate-report.sh`.
+6. Assemble & validate — fill the paste template (Grok Build: `prepare-submission.sh` or assemble + `validate-report.sh`).
 7. Hand off — paste-ready block + exact **Report an issue** steps (billing: receipt email).
 
 ---
@@ -124,6 +151,7 @@ Activate xai-bug-reporter
 | `scripts/validate-report.sh` | Required + preferred field checks; exit 0 only when complete |
 | `scripts/assemble-report.sh` | Build paste-ready report from `KEY=VALUE` file or env |
 | `scripts/prepare-submission.sh` | Full pipeline: assemble → validate → optional share check → instructions |
+| `scripts/pack-skill.sh` | Pack consumer zip (`dist/xai-bug-reporter.zip`) — no `scripts/` |
 
 ### Quick CLI examples
 
@@ -144,6 +172,10 @@ bash scripts/validate-share-link.sh "https://x.com/i/grok/share/xyz"   # live ch
 cp assets/report.env.example report.env
 # edit report.env
 bash scripts/prepare-submission.sh report.env
+
+# Consumer zip for grok.com / Android / iOS
+bash scripts/pack-skill.sh
+# → dist/xai-bug-reporter.zip
 ```
 
 ---
@@ -204,10 +236,12 @@ xai-bug-reporter/
 │   ├── assemble-report.sh
 │   ├── collect-platform-info.sh
 │   ├── parse-share-link.sh
+│   ├── pack-skill.sh             # Consumer zip (no scripts/)
 │   ├── prepare-submission.sh
 │   ├── score-severity.sh
 │   ├── validate-report.sh
 │   └── validate-share-link.sh
+├── dist/                         # generated: xai-bug-reporter.zip
 └── tests/
     └── smoke.sh                  # Empty values + share-id checks
 ```
@@ -221,7 +255,7 @@ xai-bug-reporter/
 - Required files present
 - `SKILL.md` frontmatter checks
 - `bash -n` on all scripts
-- Smoke tests: severity scoring, share-link parse/validate (share id required), assemble + validate-report (empty values rejected), `tests/smoke.sh`, platform collection
+- Smoke tests: severity scoring, share-link parse/validate (share id required), assemble + validate-report (empty values rejected), `tests/smoke.sh`, platform collection, consumer zip (`pack-skill.sh`; archive must include `SKILL.md` and must not contain `scripts/`)
 
 See [Actions → Validate skill](https://github.com/FineComputer14451/xai-bug-reporter/actions/workflows/validate.yml).
 

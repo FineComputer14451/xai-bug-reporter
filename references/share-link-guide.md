@@ -14,7 +14,8 @@ A conversation share link is the highest-value evidence for in-chat bugs. Engine
 ## Agent rules
 
 - Prefer a share link of the **current** conversation when the bug happened here.
-- Always run `scripts/parse-share-link.sh` then `scripts/validate-share-link.sh` before treating a URL as valid evidence.
+- On grok.com / iOS / Android: structural host + nonempty share-id check only; NEVER run bash or curl.
+- Grok Build MAY run `bash "$SKILL_DIR/scripts/parse-share-link.sh"` then `bash "$SKILL_DIR/scripts/validate-share-link.sh"`. Live HTTP is Grok Build only.
 - A URL without a share id (`https://grok.com/`, `https://grok.com/share/`) is invalid.
 - If validation returns `fail_expired_or_private` or network failure, request a fresh share or a screenshot instead.
 - Never invent or guess a share URL.
