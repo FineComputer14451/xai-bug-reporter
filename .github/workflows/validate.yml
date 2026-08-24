@@ -65,6 +65,22 @@ jobs:
           grep -q 'SKILL_DIR' SKILL.md
           echo "Frontmatter OK"
 
+      - name: Project skill is a git symlink
+        run: |
+          set -euo pipefail
+          while read -r mode _sha _stage path; do
+            if [[ "$mode" != "120000" ]]; then
+              echo "expected 120000 symlink, got $mode $path" >&2
+              exit 1
+            fi
+            echo "✓ git mode $mode $path"
+          done < <(git ls-files -s .grok/skills/xai-bug-reporter/)
+          [[ -L .grok/skills/xai-bug-reporter/SKILL.md ]]
+          grep -q '^name: xai-bug-reporter$' .grok/skills/xai-bug-reporter/SKILL.md
+          [[ -d .grok/skills/xai-bug-reporter/scripts ]]
+          [[ -f .grok/skills/xai-bug-reporter/scripts/score-severity.sh ]]
+          echo "Project skill symlink OK"
+
       - name: Bash syntax (bash -n)
         run: |
           set -euo pipefail
