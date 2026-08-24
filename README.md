@@ -21,9 +21,15 @@ It guides agents (and users) through formal triage, evidence collection, platfor
 
 ## Web app
 
-Open the live desk: **[xAI Bug Reporter](https://finecomputer14451.github.io/xai-bug-reporter)**
+Live desk: **[xAI Bug Reporter](https://finecomputer14451.github.io/xai-bug-reporter/)**
 
 Companion UI for this skill. It collects reporter email, subscription tier, and browser/OS system information, then copies, emails, or downloads a paste-ready **Report an issue** package.
+
+GitHub Pages publishes [`docs/`](docs/) via [Deploy GitHub Pages](https://github.com/FineComputer14451/xai-bug-reporter/actions/workflows/deploy-pages.yml). The repository homepage is set to that URL.
+
+**First-time enable (required once):** [Settings → Pages](https://github.com/FineComputer14451/xai-bug-reporter/settings/pages) → **Source: GitHub Actions**. Then re-run the **Deploy GitHub Pages** workflow (Actions → workflow_dispatch, or push to `docs/`).
+
+Until Pages is enabled, the same desk is on jsDelivr: [cdn.jsdelivr.net/…/docs/index.html](https://cdn.jsdelivr.net/gh/FineComputer14451/xai-bug-reporter@main/docs/index.html)
 
 - Public page: [`docs/`](docs/)
 - Grok Build source: [`web/`](web/)
