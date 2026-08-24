@@ -34,6 +34,7 @@ jobs:
             references/triage-protocol.md
             scripts/assemble-report.sh
             scripts/collect-platform-info.sh
+            scripts/pack-skill.sh
             scripts/parse-share-link.sh
             scripts/prepare-submission.sh
             scripts/score-severity.sh
@@ -63,6 +64,13 @@ jobs:
           grep -qiE 'report a bug|report an issue|reach a human' SKILL.md
           grep -q '/xai-bug-reporter' SKILL.md
           grep -q 'SKILL_DIR' SKILL.md
+          # consumer hosts are instructions-only; do not advertise "Requires bash"
+          compat=$(grep -E '^compatibility:' SKILL.md || true)
+          if echo "$compat" | grep -qi -- 'Requires bash'; then
+            echo "compatibility must not require bash (grok.com / Android are instructions-only)" >&2
+            echo "$compat" >&2
+            exit 1
+          fi
           echo "Frontmatter OK"
 
       - name: Project skill is a git symlink
@@ -221,6 +229,24 @@ jobs:
           set -euo pipefail
           bash scripts/collect-platform-info.sh | head -20
           bash scripts/collect-platform-info.sh --json | grep -q '"os_name"'
+
+      - name: Smoke — pack consumer zip
+        run: |
+          set -euo pipefail
+          bash scripts/pack-skill.sh
+          listing=$(unzip -l dist/xai-bug-reporter.zip)
+          echo "$listing"
+          if ! echo "$listing" | grep -q -- 'xai-bug-reporter/SKILL.md'; then
+            echo "zip missing xai-bug-reporter/SKILL.md" >&2
+            exit 1
+          fi
+          unzip -p dist/xai-bug-reporter.zip xai-bug-reporter/SKILL.md | grep -q -- '^name: xai-bug-reporter$'
+          unzip -p dist/xai-bug-reporter.zip xai-bug-reporter/SKILL.md | grep -q -- 'NEVER run bash'
+          if echo "$listing" | grep -q -- 'scripts/'; then
+            echo "consumer zip must not contain scripts/" >&2
+            exit 1
+          fi
+          echo "consumer zip OK"
 
       - name: Summary
         run: echo "All required validation checks passed."
