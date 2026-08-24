@@ -2,6 +2,8 @@
 
 xAI provides **no public bug-submission API**. All automation in this skill stops at a validated, paste-ready report.
 
+Canonical channels: `references/official-process.md`.
+
 ## What the skill automates
 
 1. Triage (severity scoring + category + impact)
@@ -16,6 +18,7 @@ xAI provides **no public bug-submission API**. All automation in this skill stop
 - POST or otherwise submit a ticket to xAI servers
 - Claim that a report has been “filed” or “ticketed”
 - Open the Report an issue UI on the user’s behalf (the user must do that)
+- Invent support emails, Discord, phone numbers, or unofficial portals
 
 ## User-facing hand-off language (recommended)
 
@@ -31,7 +34,14 @@ Your report is ready. To submit:
 For billing issues you can also reply to your receipt email with the same details.
 ```
 
+Do **not** tell grok.com / iOS / Android users to email support@x.ai. That address is documented for **xAI API** bugs only.
+
 ## Billing path
 
-- Reply directly to the receipt / invoice email, **or**
-- Email support@x.ai with account email + invoice/receipt number + the prepared report.
+- Reply directly to the receipt / invoice email.
+- Web / Google Play refunds: https://accounts.x.ai/refund
+- Apple IAP: Apple’s refund flow
+
+## API path (only if the issue is the xAI API)
+
+Documented at https://docs.x.ai/developers/debugging: email support@x.ai with subject “API Bug Report”, plus request/response/logs.

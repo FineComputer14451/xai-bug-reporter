@@ -5,7 +5,6 @@
 set -euo pipefail
 
 SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
-ROOT=$(cd "$SCRIPT_DIR/.." && pwd)
 
 ENV_FILE="${1:-}"
 if [[ -z "$ENV_FILE" || ! -f "$ENV_FILE" ]]; then
@@ -14,23 +13,30 @@ if [[ -z "$ENV_FILE" || ! -f "$ENV_FILE" ]]; then
   exit 1
 fi
 
+# Invoke via bash so the pipeline works even when git/fs did not preserve +x.
+run_script() {
+  bash "$SCRIPT_DIR/$1" "${@:2}"
+}
+
 echo "=== 1. Assemble ==="
-REPORT=$("$SCRIPT_DIR/assemble-report.sh" "$ENV_FILE")
+REPORT=$(run_script assemble-report.sh "$ENV_FILE")
 echo "$REPORT"
 echo
 
 echo "=== 2. Validate fields ==="
 set +e
-echo "$REPORT" | "$SCRIPT_DIR/validate-report.sh"
+echo "$REPORT" | run_script validate-report.sh
 val_rc=$?
 set -e
 echo
 
 SHARE=$(grep -E '^SHARE_LINK=' "$ENV_FILE" | cut -d= -f2- | xargs || true)
+share_rc=0
 if [[ -n "$SHARE" ]]; then
   echo "=== 3. Share-link validation ==="
   set +e
-  "$SCRIPT_DIR/validate-share-link.sh" "$SHARE"
+  run_script validate-share-link.sh "$SHARE"
+  share_rc=$?
   set -e
   echo
 fi
@@ -47,9 +53,12 @@ To submit via the official path:
 4. Attach a screenshot if available.
 5. Submit.
 
-Billing alternative: reply to your receipt email (or email support@x.ai) with the same details + invoice number.
+Billing alternative: reply to your receipt email with the same details + invoice number.
 
 This skill does not (and cannot) submit the ticket for you — there is no public xAI bug API.
 EOF
 
-exit $val_rc
+if [[ $val_rc -ne 0 ]]; then
+  exit "$val_rc"
+fi
+exit "$share_rc"
