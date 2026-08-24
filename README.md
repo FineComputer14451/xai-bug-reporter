@@ -39,24 +39,40 @@ Canonical reference: [xAI FAQ — How do I report a bug or reach a human?](https
 | **Share-link pipeline** | Parse + structural/live validation for `grok.com/share/...` and `x.com/i/grok/share/...` |
 | **Field enforcement** | Required fields must be present before “ready to submit” |
 | **Paste-ready package** | `assemble-report.sh` + `prepare-submission.sh` → BEGIN/END report block |
-| **Hard boundaries** | Never invent emails, Discord, or claim a ticket was filed |
+| **Hard boundaries** | Never invent unofficial inboxes; no ticket-filing claims |
 
 ---
 
-## Install
+## Install (Grok Build)
 
-Clone or copy into your Grok skills directory. The folder name **must** be `xai-bug-reporter` (matches `name` in `SKILL.md`).
+Grok Build loads a directory that contains `SKILL.md`. The folder name **must** be `xai-bug-reporter` (matches `name` in `SKILL.md`).
+
+**User-wide** (every project):
 
 ```bash
-# From this repo
 git clone https://github.com/FineComputer14451/xai-bug-reporter.git
-cp -a xai-bug-reporter ~/.grok/skills/
-
-# Or into a project skills path
-cp -a xai-bug-reporter /path/to/.grok/skills/
+ln -sfn "$(pwd)/xai-bug-reporter" ~/.grok/skills/xai-bug-reporter
+grok inspect | grep xai-bug-reporter
 ```
 
-Optional: make scripts executable:
+**This repo:** `.grok/skills/xai-bug-reporter/` is already linked, so `grok` started in the clone picks it up as a project skill.
+
+**Another project:**
+
+```bash
+mkdir -p /path/to/project/.grok/skills
+ln -sfn /path/to/xai-bug-reporter /path/to/project/.grok/skills/xai-bug-reporter
+```
+
+Then in Grok Build:
+
+- `/xai-bug-reporter`
+- `/skills` → xai-bug-reporter
+- Auto-invoke on “report a bug”, “reach a human”, “xAI support”, …
+
+Scripts are committed executable (`100755`). Examples below use `bash scripts/…` from the **skill directory**, which works even if `+x` was lost on copy. `prepare-submission.sh` also invokes sibling scripts via `bash` for the same reason.
+
+Optional: restore the executable bit after a copy that dropped it:
 
 ```bash
 chmod +x ~/.grok/skills/xai-bug-reporter/scripts/*.sh
@@ -78,6 +94,7 @@ Explicit:
 
 ```text
 Activate xai-bug-reporter
+/xai-bug-reporter
 ```
 
 **In-chat rule:** if the failure happened in the *current* thread, stay there. Treat this conversation as primary evidence and help produce a share link for *this* chat.
@@ -154,8 +171,9 @@ Platform tips:
 
 ## Hard rules
 
-- Prefer in-product **Report an issue**; billing may also use the receipt email.
-- Never invent support emails, Discord servers, phone numbers, or unofficial portals.
+- Prefer in-product **Report an issue**. Billing: reply to the receipt email (refunds: [accounts.x.ai/refund](https://accounts.x.ai/refund)).
+- Cite only documented channels (`references/official-process.md`). Never invent emails, Discord, phones, or unofficial portals.
+- **support@x.ai** is documented for **xAI API** bugs only ([debugging](https://docs.x.ai/developers/debugging)), not as a general Grok-app inbox.
 - Never invent or alter share URLs.
 - Never claim a ticket was filed on xAI servers (no public submission API).
 - Never force the user to leave the chat where the bug occurred in order to report it.
@@ -170,6 +188,7 @@ xai-bug-reporter/
 ├── SKILL.md                      # Agent instructions + frontmatter
 ├── README.md
 ├── LICENSE
+├── .grok/skills/xai-bug-reporter/  # Grok Build project skill (symlinks)
 ├── .github/
 │   ├── dependabot.yml            # Weekly Actions updates
 │   └── workflows/validate.yml
@@ -181,14 +200,16 @@ xai-bug-reporter/
 │   ├── triage-protocol.md        # Severity table + categories
 │   ├── share-link-guide.md       # How to create / validate share links
 │   └── submission-guide.md       # Automation boundaries
-└── scripts/
-    ├── assemble-report.sh
-    ├── collect-platform-info.sh
-    ├── parse-share-link.sh
-    ├── prepare-submission.sh
-    ├── score-severity.sh
-    ├── validate-report.sh
-    └── validate-share-link.sh
+├── scripts/
+│   ├── assemble-report.sh
+│   ├── collect-platform-info.sh
+│   ├── parse-share-link.sh
+│   ├── prepare-submission.sh
+│   ├── score-severity.sh
+│   ├── validate-report.sh
+│   └── validate-share-link.sh
+└── tests/
+    └── smoke.sh                  # Empty values + share-id checks
 ```
 
 ---
@@ -200,7 +221,7 @@ xai-bug-reporter/
 - Required files present
 - `SKILL.md` frontmatter checks
 - `bash -n` on all scripts
-- Smoke tests: severity scoring, share-link parse/validate, assemble + validate-report, platform collection
+- Smoke tests: severity scoring, share-link parse/validate (share id required), assemble + validate-report (empty values rejected), `tests/smoke.sh`, platform collection
 
 See [Actions → Validate skill](https://github.com/FineComputer14451/xai-bug-reporter/actions/workflows/validate.yml).
 
