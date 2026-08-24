@@ -176,6 +176,30 @@ else
   echo "OK   Grok handoff uses receipt email, not support@x.ai"
 fi
 
+# --- project skill must be a real symlink, not a path-text blob ---
+proj="$ROOT/.grok/skills/xai-bug-reporter"
+ran=$((ran + 1))
+if [[ ! -L "$proj/SKILL.md" ]]; then
+  fail=$((fail + 1))
+  echo "FAIL project SKILL.md is not a symlink"
+elif ! grep -q '^name: xai-bug-reporter$' "$proj/SKILL.md"; then
+  fail=$((fail + 1))
+  echo "FAIL project SKILL.md does not resolve to skill frontmatter"
+else
+  echo "OK   project SKILL.md is a symlink to the real skill"
+fi
+
+ran=$((ran + 1))
+if [[ ! -L "$proj/scripts" || ! -d "$proj/scripts" ]]; then
+  fail=$((fail + 1))
+  echo "FAIL project scripts/ is not a symlink to a directory"
+elif [[ ! -f "$proj/scripts/score-severity.sh" ]]; then
+  fail=$((fail + 1))
+  echo "FAIL project scripts/ does not contain score-severity.sh"
+else
+  echo "OK   project scripts/ is a symlink to helpers"
+fi
+
 echo
 if [[ "$fail" -ne 0 ]]; then
   echo "$fail/$ran FAILED"
