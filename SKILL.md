@@ -1,6 +1,13 @@
 ---
 name: xai-bug-reporter
-description: Encodes the official xAI Grok bug-reporting and human-support process. Use when the user wants to report a bug, reach a human, file an issue with xAI, get support for billing or product problems, contact the engineering team, or when a bug occurs in the current chat. Triggers on report a bug, report an issue, reach a human, xAI support, Grok bug, contact xAI, this is broken, something went wrong, help me report this, file a ticket, billing issue, subscription problem. Designed to activate inside the same conversation where the bug happened so the current chat can serve as evidence.
+description: >
+  Encodes the official xAI Grok bug-reporting and human-support process. Guides triage, evidence collection, and a paste-ready report for in-product Report an issue — without inventing support channels or filing tickets. Use when the user wants to report a bug, reach a human, file an issue with xAI, get support for billing or product problems, contact the engineering team, or when a bug occurs in the current chat. Triggers on report a bug, report an issue, reach a human, xAI support, Grok bug, contact xAI, this is broken, something went wrong, help me report this, file a ticket, billing issue, subscription problem. Designed to activate inside the same conversation where the bug happened so the current chat can serve as evidence. Use when the user runs /xai-bug-reporter.
+user-invocable: true
+license: MIT
+compatibility: Requires bash; curl for live share-link checks.
+metadata:
+  short-description: "Prepare an xAI/Grok bug report"
+  author: FineComputer14451
 ---
 
 # xAI Bug Reporter
@@ -22,12 +29,23 @@ When the user reports a problem with the current chat (e.g. "this is broken", "y
 4. Collect remaining required fields in this same thread.
 5. Produce the final paste-ready report here so the user can open the three-dots menu → **Report an issue** and paste it without leaving context.
 
-Never tell the user they must open a different conversation to report the bug that just happened.
+Never tell the user they must leave a different conversation to report the bug that just happened.
+
+## Grok Build
+
+This is a normal Grok Build skill (`SKILL.md` + `scripts/` + `references/`).
+
+- Slash: `/xai-bug-reporter`
+- Menu: `/skills` → xai-bug-reporter
+- Auto: description triggers (report a bug, reach a human, …)
+
+**Skill directory (`SKILL_DIR`)** is the folder that contains this `SKILL.md` (user: `~/.grok/skills/xai-bug-reporter`, repo: `<repo>/.grok/skills/xai-bug-reporter`). Always run helpers as `bash "$SKILL_DIR/scripts/….sh"` — do not assume the user’s cwd is the skill.
 
 ## Usage
 
 ### How the skill activates
 
+- Slash command: `/xai-bug-reporter` (Grok Build TUI / slash menu)
 - Automatic: user phrases matching the description (report a bug, reach a human, this is broken, etc.).
 - Explicit: user says "activate xai-bug-reporter" or "help me report this issue".
 - Contextual: a clear failure or anomaly occurs in the current thread and the user asks for help reporting it.
@@ -35,24 +53,24 @@ Never tell the user they must open a different conversation to report the bug th
 ### Typical agent flow
 
 1. **Confirm in-chat context** — Acknowledge the bug happened here (or in a linked chat) and that this skill can prepare the report without leaving.
-2. **Triage first** — Run `scripts/score-severity.sh` on the problem description, then confirm Severity + Category + Impact with the user (see `references/triage-protocol.md`).
-3. **Collect evidence early** — Prefer a share link of *this* conversation. Use `scripts/parse-share-link.sh` and `scripts/validate-share-link.sh`. Also collect screenshot if available.
-4. **Collect required fields** — Account email, subscription tier, platform, system/app info, steps to reproduce. Use `scripts/collect-platform-info.sh` where helpful.
+2. **Triage first** — Run `bash "$SKILL_DIR/scripts/score-severity.sh"` on the problem description, then confirm Severity + Category + Impact with the user (see `$SKILL_DIR/references/triage-protocol.md`).
+3. **Collect evidence early** — Prefer a share link of *this* conversation. Use `parse-share-link.sh` and `validate-share-link.sh` under `$SKILL_DIR/scripts/`. Also collect screenshot if available.
+4. **Collect required fields** — Account email, subscription tier, platform, system/app info, steps to reproduce. Use `bash "$SKILL_DIR/scripts/collect-platform-info.sh"` where helpful.
 5. **Handle missing fields** — List every missing item; never emit a completed report while required fields are incomplete.
-6. **Assemble & validate** — Use `scripts/assemble-report.sh` / `scripts/prepare-submission.sh` and `scripts/validate-report.sh`.
+6. **Assemble & validate** — `assemble-report.sh` / `prepare-submission.sh` and `validate-report.sh` under `$SKILL_DIR/scripts/`.
 7. **Hand off for submission** — Give the paste-ready block + exact steps for the in-product Report an issue flow (or billing email path).
 
 ### Scripts
 
-| Script | Purpose |
+| Script (under `$SKILL_DIR/scripts/`) | Purpose |
 |--------|---------|
-| `scripts/score-severity.sh` | Suggest Severity from description keywords |
-| `scripts/collect-platform-info.sh` | Collect OS, kernel, GPU, browsers (human or `--json`) |
-| `scripts/parse-share-link.sh` | Extract id/host from Grok share URLs |
-| `scripts/validate-share-link.sh` | Structural + live HTTP validation of share links |
-| `scripts/validate-report.sh` | Check required + preferred fields; exit 0 only when complete |
-| `scripts/assemble-report.sh` | Build paste-ready report from KEY=VALUE fields |
-| `scripts/prepare-submission.sh` | Full pipeline: assemble → validate → optional share check → paste package |
+| `score-severity.sh` | Suggest Severity from description keywords |
+| `collect-platform-info.sh` | Collect OS, kernel, GPU, browsers (human or `--json`) |
+| `parse-share-link.sh` | Extract id/host from Grok share URLs |
+| `validate-share-link.sh` | Structural + live HTTP validation of share links |
+| `validate-report.sh` | Check required + preferred fields; exit 0 only when complete |
+| `assemble-report.sh` | Build paste-ready report from KEY=VALUE fields |
+| `prepare-submission.sh` | Full pipeline: assemble → validate → optional share check → paste package |
 
 ## Required fields
 
@@ -76,6 +94,7 @@ Always collect (or confirm) before declaring the report ready:
 ## Error handling for missing fields
 
 - Never output a "ready to submit" report while any required field is missing.
+- Empty or whitespace-only values after a label do not count as present.
 - Explicitly list every missing item.
 - After the user supplies more information, re-validate the full set.
 - If the user refuses a field, note the refusal and still produce the best possible report, but mark it incomplete.
@@ -91,20 +110,24 @@ Follow `references/triage-protocol.md`.
 
 ## Official submission paths (hard rules)
 
-1. **Preferred**: In-product **Report an issue** / **Report Issue**  
+Channels are defined in `references/official-process.md` (re-check [docs.x.ai](https://docs.x.ai) if the product UI disagrees).
+
+1. **Preferred (Grok web / iOS / Android)**: In-product **Report an issue** / **Report Issue**  
    - Three-dots (⋮) menu next to a response or in the chat interface → Report an issue.  
    - Paste the prepared report. Include account email, platform, steps, and share link or screenshot.
 
-2. **Billing / subscription**: Reply to the receipt email, or email support with account email + invoice/receipt number.
+2. **Billing / subscription**: Reply to the receipt / invoice email with account email + invoice/receipt number. Web/Play refunds: https://accounts.x.ai/refund. Apple IAP: Apple’s refund flow.
 
-3. **General support email**: support@x.ai (or the official short link the product surfaces). Always include the collected fields.
+3. **xAI API bugs only**: Email **support@x.ai** as documented at [Debugging / Bug Report](https://docs.x.ai/developers/debugging) (subject “API Bug Report”, plus request/response/logs). Do **not** give this address as a general Grok-app inbox.
 
 **Never**:
-- Invent Discord servers, phone numbers, other email addresses, or unofficial portals.
+- Invent Discord servers, phone numbers, emails, or unofficial portals. Cite only channels in `references/official-process.md` or a contact the product UI currently shows.
 - Claim that a ticket was filed on xAI servers (there is no public submission API).
 - Tell the user they must leave the current chat to report a bug that occurred in it.
 
 ## Supporting files
+
+All paths are under `$SKILL_DIR`:
 
 - `references/official-process.md` — Canonical process notes
 - `references/triage-protocol.md` — Severity, categories, decision rules
