@@ -174,7 +174,7 @@ jobs:
           DESCRIPTION=Automated CI smoke test of assemble and validate pipeline
           STEPS=1. Push to main\n2. Workflow runs\n3. All checks pass
           SHARE_LINK=
-          SCREENSHOT=no
+          SCREENSHOT=yes
           INVOICE=
           WORKAROUND=
           FREQUENCY=once
@@ -211,7 +211,7 @@ jobs:
           DESCRIPTION=Automated CI smoke test of prepare-submission pipeline
           STEPS=1. Push to main\n2. Workflow runs\n3. All checks pass
           SHARE_LINK=
-          SCREENSHOT=no
+          SCREENSHOT=yes
           INVOICE=
           WORKAROUND=
           FREQUENCY=once

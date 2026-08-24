@@ -44,7 +44,7 @@ Numbered steps work **without scripts**. Parentheses are Grok Build MAY helpers 
 1. **Confirm in-chat context** — Acknowledge the bug happened here (or in a linked chat) and that this skill can prepare the report without leaving.
 2. **Triage first** — Apply the severity table below, then confirm Severity + Category + Impact with the user. (Grok Build MAY run `bash "$SKILL_DIR/scripts/score-severity.sh"`.)
 3. **Collect evidence early** — Prefer a share link of *this* conversation. Structural share-id check only (see Share-link rules). Also collect a screenshot if available. (Grok Build MAY run `parse-share-link.sh` / `validate-share-link.sh`. Live HTTP is Grok Build only.)
-4. **Collect required fields** — Account email, subscription tier, platform, system/app info, steps to reproduce. Ask the user for device model, OS version, and Grok app or browser version. (Grok Build MAY run `bash "$SKILL_DIR/scripts/collect-platform-info.sh"`.)
+4. **Collect required fields** — Account email, subscription tier, platform, system/app info, description, and evidence (share id or screenshot). Push for steps to reproduce. Ask the user for device model, OS version, and Grok app or browser version. (Grok Build MAY run `bash "$SKILL_DIR/scripts/collect-platform-info.sh"`.)
 5. **Handle missing fields** — List every missing item; never emit a completed report while required fields are incomplete.
 6. **Assemble & validate** — Fill the paste template in chat. (Grok Build MAY run `assemble-report.sh` / `prepare-submission.sh` / `validate-report.sh`.)
 7. **Hand off for submission** — Give the paste-ready block + exact steps for the in-product Report an issue flow (or billing email path).
@@ -58,9 +58,12 @@ Always collect (or confirm) before declaring the report ready:
 - Platform (Web / iOS / Android)
 - System and app information (OS version, device model, Grok app or browser version)
 - Clear description of the bug / issue
-- Steps to reproduce (strongly preferred; push for them)
-- Evidence: conversation share link (especially of the current chat) **or** screenshot
+- Evidence: conversation share link with a nonempty share id (especially of the current chat) **or** screenshot
 - For billing issues: invoice / receipt number
+
+Strongly preferred (push for them; list as missing if absent, but they do not block READY once required fields exist):
+
+- Steps to reproduce
 
 ### Platform-specific tips
 

@@ -99,7 +99,7 @@ EOF
 expect_rc 1 "whitespace-only required fields are incomplete" \
   assembled_validate "$tmpdir/spaces.env"
 
-# Filled required fields, no evidence: required OK, preferred missing, still exit 0
+# Filled identity fields, no evidence: evidence is required → incomplete
 cat >"$tmpdir/required-only.env" <<'EOF'
 SEVERITY=High
 CATEGORY=UI
@@ -113,8 +113,24 @@ STEPS=
 SHARE_LINK=
 SCREENSHOT=no
 EOF
-expect_rc_and 0 'PREFERRED missing' "required values pass; screenshot=no is not evidence" \
+expect_rc_and 1 'STATUS: INCOMPLETE' "screenshot=no and empty share is incomplete" \
   assembled_validate "$tmpdir/required-only.env"
+
+cat >"$tmpdir/required-plus-shot.env" <<'EOF'
+SEVERITY=High
+CATEGORY=UI
+IMPACT=Cannot open share menu
+ACCOUNT_EMAIL=ci@example.com
+SUBSCRIPTION_TIER=SuperGrokPro
+PLATFORM=Web
+SYSTEM_INFO=Ubuntu CI
+DESCRIPTION=Share menu freezes
+STEPS=
+SHARE_LINK=
+SCREENSHOT=yes
+EOF
+expect_rc_and 0 'PREFERRED missing' "screenshot counts as evidence; steps still preferred" \
+  assembled_validate "$tmpdir/required-plus-shot.env"
 
 expect_rc_and 0 'STATUS: READY TO SUBMIT' "example env still complete" \
   assembled_validate "$ROOT/assets/report.env.example"
@@ -159,12 +175,15 @@ EOF
 expect_rc 1 "prepare fails when SHARE_LINK host is not Grok" \
   prepare "$tmpdir/bad-share.env"
 
-expect_rc 0 "prepare succeeds with filled required fields and empty share" \
+expect_rc 1 "prepare fails without share or screenshot" \
   prepare "$tmpdir/required-only.env"
+
+expect_rc 0 "prepare succeeds with screenshot evidence and empty share" \
+  prepare "$tmpdir/required-plus-shot.env"
 
 ran=$((ran + 1))
 set +e
-prep_out=$(prepare "$tmpdir/required-only.env" 2>&1)
+prep_out=$(prepare "$tmpdir/required-plus-shot.env" 2>&1)
 set -e
 if echo "$prep_out" | grep -q 'support@x.ai'; then
   fail=$((fail + 1))

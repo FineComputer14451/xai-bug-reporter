@@ -189,9 +189,10 @@ Always collect (or confirm) before declaring the report ready:
 - Platform (Web / iOS / Android)
 - System & app info (OS, device model, Grok app or browser version)
 - Clear description of the problem
-- Steps to reproduce (strongly preferred)
-- Evidence: conversation **share link** (especially of the current chat) **or** screenshot
+- Evidence: conversation **share link** with a nonempty share id (especially of the current chat) **or** screenshot
 - Billing only: invoice / receipt number
+
+Strongly preferred (do not block READY): steps to reproduce.
 
 Platform tips:
 

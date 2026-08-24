@@ -109,10 +109,11 @@ if [[ -z "$(steps_value)" ]]; then
   preferred_missing+=("Steps to reproduce")
 fi
 
+# Required evidence: nonempty share id URL or a real screenshot (not no/none/false)
 share_val=$(line_value '(conversation[[:space:]]+share[[:space:]]+link|share[[:space:]]+link)')
 shot_val=$(line_value 'screenshot')
 if ! is_share_evidence "$share_val" && ! is_screenshot_evidence "$shot_val"; then
-  preferred_missing+=("Share link or screenshot")
+  missing+=("Share link or screenshot")
 fi
 
 echo "=== Report validation ==="
