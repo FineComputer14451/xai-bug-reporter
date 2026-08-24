@@ -196,7 +196,7 @@ jobs:
           sed -i 's/^[[:space:]]*//' /tmp/ci-prepare.env
           out=$(bash scripts/prepare-submission.sh /tmp/ci-prepare.env)
           echo "$out"
-          echo "$out" | grep -q '-----BEGIN REPORT-----'
+          echo "$out" | grep -q -- '-----BEGIN REPORT-----'
           echo "$out" | grep -q 'STATUS: READY TO SUBMIT'
           echo "$out" | grep -q 'Report an issue'
 
