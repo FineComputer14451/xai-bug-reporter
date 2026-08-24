@@ -4,9 +4,9 @@
 
 It guides agents (and users) through formal triage, evidence collection, platform info, share-link validation, and a paste-ready report for the in-product **Report an issue** flow — without inventing support channels or claiming to file tickets on xAI servers.
 
-**Web app:** [xAI Bug Reporter](https://finecomputer14451.github.io/xai-bug-reporter/) — structured desk for email, subscription tier, system info, and a paste-ready package.
+**Web app:** [xAI Bug Reporter](https://cdn.jsdelivr.net/gh/FineComputer14451/xai-bug-reporter@main/docs/index.html) — structured desk for email, subscription tier, system info, and a paste-ready package.
 
-[![Web app](https://img.shields.io/badge/web_app-live-0C0C0D?logo=github&logoColor=white)](https://finecomputer14451.github.io/xai-bug-reporter/)
+[![Web app](https://img.shields.io/badge/web_app-live-0C0C0D?logo=github&logoColor=white)](https://cdn.jsdelivr.net/gh/FineComputer14451/xai-bug-reporter@main/docs/index.html)
 [![Validate skill](https://github.com/FineComputer14451/xai-bug-reporter/actions/workflows/validate.yml/badge.svg?branch=main)](https://github.com/FineComputer14451/xai-bug-reporter/actions/workflows/validate.yml)
 [![Dependabot](https://img.shields.io/badge/Dependabot-enabled-025E8C?logo=dependabot&logoColor=white)](https://github.com/FineComputer14451/xai-bug-reporter/network/updates)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
@@ -20,9 +20,12 @@ It guides agents (and users) through formal triage, evidence collection, platfor
 
 ## Web app
 
-Open the live desk: **[https://finecomputer14451.github.io/xai-bug-reporter/](https://finecomputer14451.github.io/xai-bug-reporter/)**
+Open the live desk: **[xAI Bug Reporter](https://cdn.jsdelivr.net/gh/FineComputer14451/xai-bug-reporter@main/docs/index.html)**
 
-Companion UI for this skill. It collects reporter email, subscription tier, and browser/OS system information, then copies, emails, or downloads a paste-ready **Report an issue** package. Source for the Grok Build version lives in [`web/`](web/).
+Companion UI for this skill. It collects reporter email, subscription tier, and browser/OS system information, then copies, emails, or downloads a paste-ready **Report an issue** package.
+
+- Public page: [`docs/`](docs/)
+- Grok Build source: [`web/`](web/)
 
 ---
 
