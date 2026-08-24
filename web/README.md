@@ -5,3 +5,5 @@ Companion web desk for the [xai-bug-reporter](https://github.com/FineComputer144
 Collects email, subscription tier, and system information, then copies, emails, or downloads a paste-ready **Report an issue** package.
 
 Independent project — not affiliated with xAI.
+
+Live: https://finecomputer14451.github.io/xai-bug-reporter/
