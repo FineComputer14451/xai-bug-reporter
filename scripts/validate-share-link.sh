@@ -42,14 +42,12 @@ case "$host_lc" in
   grok.com|www.grok.com|grok.x.ai|grok.x.com)
     link_type="grok_web"
     [[ "$path" =~ /share/([A-Za-z0-9_-]+) ]] && share_id="${BASH_REMATCH[1]}"
-    structural_ok=1
     ;;
   x.com|www.x.com|twitter.com)
     link_type="x_grok"
     if [[ "$path" =~ /i/grok/share/([A-Za-z0-9_-]+) ]] || [[ "$path" =~ /share/([A-Za-z0-9_-]+) ]]; then
       share_id="${BASH_REMATCH[1]}"
     fi
-    structural_ok=1
     ;;
   *)
     result="fail_structural"
@@ -57,6 +55,16 @@ case "$host_lc" in
     structural_ok=0
     ;;
 esac
+
+if [[ "$link_type" != "unknown" ]]; then
+  if [[ -z "$share_id" ]]; then
+    result="fail_structural"
+    reason="missing share id"
+    structural_ok=0
+  else
+    structural_ok=1
+  fi
+fi
 
 if [[ $structural_ok -eq 0 ]]; then
   if [[ $JSON -eq 1 ]]; then

@@ -59,6 +59,15 @@ case "$host_lc" in
     ;;
 esac
 
+if [[ -z "$share_id" ]]; then
+  if [[ $JSON -eq 1 ]]; then
+    echo "{\"ok\":false,\"error\":\"missing_share_id\",\"host\":\"$host\",\"path\":\"$path\",\"url\":\"$URL\"}"
+  else
+    echo "ERROR: share id not found in $URL"
+  fi
+  exit 1
+fi
+
 if [[ $JSON -eq 1 ]]; then
   cat <<EOF
 {
