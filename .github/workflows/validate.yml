@@ -25,6 +25,7 @@ jobs:
             SKILL.md
             README.md
             LICENSE
+            .grok/skills/xai-bug-reporter/SKILL.md
             assets/report-checklist.md
             assets/report.env.example
             references/official-process.md
@@ -38,6 +39,7 @@ jobs:
             scripts/score-severity.sh
             scripts/validate-report.sh
             scripts/validate-share-link.sh
+            tests/smoke.sh
           )
           missing=0
           for f in "${required[@]}"; do
@@ -56,8 +58,11 @@ jobs:
           head -1 SKILL.md | grep -q '^---$'
           grep -q '^name: xai-bug-reporter$' SKILL.md
           grep -q '^description:' SKILL.md
+          grep -q '^user-invocable: true$' SKILL.md
           # description should mention bug/report triggers
           grep -qiE 'report a bug|report an issue|reach a human' SKILL.md
+          grep -q '/xai-bug-reporter' SKILL.md
+          grep -q 'SKILL_DIR' SKILL.md
           echo "Frontmatter OK"
 
       - name: Bash syntax (bash -n)
@@ -68,14 +73,21 @@ jobs:
             echo "✓ syntax $s"
           done
 
-      - name: Make scripts executable check
+      - name: Shebang + git mode
         run: |
           set -euo pipefail
-          # Ensure shebang present; mode may not be preserved in all clones
           for s in scripts/*.sh; do
             head -1 "$s" | grep -q '^#!/usr/bin/env bash'
             echo "✓ shebang $s"
           done
+          # Prefer 100755 locally. Helpers are invoked with bash, so 100644 is OK.
+          while read -r mode _sha _stage path; do
+            echo "git mode $mode $path"
+            case "$mode" in
+              100755|100644) ;;
+              *) echo "unexpected mode $mode $path" >&2; exit 1 ;;
+            esac
+          done < <(git ls-files -s scripts/*.sh)
 
       - name: Install shellcheck (optional lint)
         continue-on-error: true
@@ -117,6 +129,11 @@ jobs:
             echo "expected failure for non-Grok host" >&2
             exit 1
           fi
+          # share id required
+          if bash scripts/validate-share-link.sh --offline "https://grok.com/"; then
+            echo "expected failure for missing share id" >&2
+            exit 1
+          fi
           echo "offline validation OK"
 
       - name: Smoke — assemble + validate-report
@@ -144,6 +161,44 @@ jobs:
           report=$(bash scripts/assemble-report.sh /tmp/ci-report.env)
           echo "$report"
           echo "$report" | bash scripts/validate-report.sh
+          # empty labels must not pass
+          : > /tmp/ci-empty.env
+          if bash scripts/assemble-report.sh /tmp/ci-empty.env | bash scripts/validate-report.sh; then
+            echo "expected failure for empty assembled report" >&2
+            exit 1
+          fi
+
+      - name: Smoke — tests/smoke.sh
+        run: |
+          set -euo pipefail
+          bash tests/smoke.sh
+
+      - name: Smoke — prepare-submission
+        run: |
+          set -euo pipefail
+          cat > /tmp/ci-prepare.env << 'EOF'
+          SEVERITY=High
+          CATEGORY=UI
+          IMPACT=CI smoke test impact statement
+          ACCOUNT_EMAIL=ci@example.com
+          SUBSCRIPTION_TIER=SuperGrokPro
+          PLATFORM=Web
+          SYSTEM_INFO=Ubuntu GitHub Actions runner
+          DESCRIPTION=Automated CI smoke test of prepare-submission pipeline
+          STEPS=1. Push to main\n2. Workflow runs\n3. All checks pass
+          SHARE_LINK=
+          SCREENSHOT=no
+          INVOICE=
+          WORKAROUND=
+          FREQUENCY=once
+          IN_CHAT=yes
+          EOF
+          sed -i 's/^[[:space:]]*//' /tmp/ci-prepare.env
+          out=$(bash scripts/prepare-submission.sh /tmp/ci-prepare.env)
+          echo "$out"
+          echo "$out" | grep -q '-----BEGIN REPORT-----'
+          echo "$out" | grep -q 'STATUS: READY TO SUBMIT'
+          echo "$out" | grep -q 'Report an issue'
 
       - name: Smoke — collect-platform-info
         run: |
