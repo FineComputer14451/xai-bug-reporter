@@ -16,7 +16,7 @@ type PreviewProps = {
 };
 
 export function ReportPreview({ draft, onCopy, onDownload }: PreviewProps) {
-  const { percent, missing, ready } = scoreReport(draft);
+  const { percent, missing, missingPreferred, ready } = scoreReport(draft);
   const product = productById(draft.product);
   const text = formatReport(draft);
 
@@ -28,7 +28,7 @@ export function ReportPreview({ draft, onCopy, onDownload }: PreviewProps) {
             Live report
           </p>
           <h2 className="font-display mt-1 text-lg font-semibold tracking-tight">
-            {ready ? "Ready to file" : "Still assembling"}
+            {ready ? "READY" : "INCOMPLETE"}
           </h2>
         </div>
         <CompletenessRing value={percent} />
@@ -36,12 +36,18 @@ export function ReportPreview({ draft, onCopy, onDownload }: PreviewProps) {
 
       {missing.length > 0 ? (
         <p className="text-sm text-muted">
-          Add {missing.join(", ").replace(/, ([^,]*)$/, " and $1")}.
+          Still missing required:{" "}
+          {missing.join(", ").replace(/, ([^,]*)$/, " and $1")}.
+        </p>
+      ) : missingPreferred && missingPreferred.length > 0 ? (
+        <p className="text-sm text-muted">
+          Ready. Preferred still empty:{" "}
+          {missingPreferred.join(", ").replace(/, ([^,]*)$/, " and $1")}.
         </p>
       ) : (
         <p className="text-sm text-muted">
-          Routes to {product?.inbox ?? "support@x.ai"}. Copy it, or open a mail
-          draft.
+          Ready to paste into Grok → Report an issue
+          {product ? ` (or ${product.inbox})` : ""}.
         </p>
       )}
 

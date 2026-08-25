@@ -5,6 +5,7 @@ export const PRODUCTS = [
     hint: "Answers, tools, web UI",
     inbox: "support@x.ai",
     tip: "Include the conversation share link, the model if you know it, and whether a new chat fixes it.",
+    category: "Other",
   },
   {
     id: "imagine",
@@ -12,6 +13,7 @@ export const PRODUCTS = [
     hint: "Images and video",
     inbox: "support@x.ai",
     tip: "Paste the prompt, aspect ratio, image vs video, and whether the job failed, stalled, or looked wrong.",
+    category: "Image or video generation",
   },
   {
     id: "grok-x",
@@ -19,6 +21,7 @@ export const PRODUCTS = [
     hint: "Grok inside X",
     inbox: "support@x.ai",
     tip: "Note the X client (web, iOS, Android) and whether it happens on grok.com too.",
+    category: "Other",
   },
   {
     id: "api",
@@ -26,6 +29,7 @@ export const PRODUCTS = [
     hint: "Models, keys, calling",
     inbox: "support@x.ai",
     tip: "Include model name, HTTP status, request id, and a redacted request/response. Do not paste API keys.",
+    category: "Other",
   },
   {
     id: "ios",
@@ -33,6 +37,7 @@ export const PRODUCTS = [
     hint: "iPhone and iPad",
     inbox: "support@x.ai",
     tip: "Include iOS version, app version, and device. Screenshots help more than a long write-up.",
+    category: "Other",
   },
   {
     id: "android",
@@ -40,6 +45,7 @@ export const PRODUCTS = [
     hint: "Phone and tablet",
     inbox: "support@x.ai",
     tip: "Include Android version, app version, and device. Note if it is the Play Store build.",
+    category: "Other",
   },
   {
     id: "voice",
@@ -47,6 +53,7 @@ export const PRODUCTS = [
     hint: "Talk mode and TTS",
     inbox: "support@x.ai",
     tip: "Note input vs output, headset vs speaker, and whether text chat still works.",
+    category: "Other",
   },
   {
     id: "tesla",
@@ -54,6 +61,7 @@ export const PRODUCTS = [
     hint: "In-car Grok",
     inbox: "support@x.ai",
     tip: "Include vehicle software version, whether you used voice or the screen, and what the car did.",
+    category: "Other",
   },
   {
     id: "billing",
@@ -61,6 +69,7 @@ export const PRODUCTS = [
     hint: "Plans and receipts",
     inbox: "support@x.ai",
     tip: "Include the invoice or receipt number and the account email. Do not paste full card numbers.",
+    category: "Authentication / subscription / billing",
   },
   {
     id: "safety",
@@ -68,6 +77,7 @@ export const PRODUCTS = [
     hint: "Harm or jailbreaks",
     inbox: "safety@x.ai",
     tip: "This routes to safety@x.ai. Describe the output and context. Do not repeat harmful content in full.",
+    category: "Other",
   },
   {
     id: "other",
@@ -75,13 +85,14 @@ export const PRODUCTS = [
     hint: "Something else",
     inbox: "support@x.ai",
     tip: "Name the product in the summary so the team can route it.",
+    category: "Other",
   },
 ] as const;
 
 export type ProductId = (typeof PRODUCTS)[number]["id"];
 
 export const SEVERITIES = [
-  { id: "blocker", label: "Blocker", hint: "Cannot use it" },
+  { id: "critical", label: "Critical", hint: "Data loss / unusable" },
   { id: "high", label: "High", hint: "Major breakage" },
   { id: "medium", label: "Medium", hint: "Workaround exists" },
   { id: "low", label: "Low", hint: "Polish / niggle" },
@@ -249,6 +260,7 @@ export function systemFilled(info: SystemInfo) {
   return Boolean(info.browser || info.os || info.userAgent);
 }
 
+/** Required fields that block Status: READY */
 const REQUIRED: { key: keyof ReportDraft; label: string; min: number }[] = [
   { key: "product", label: "Product", min: 1 },
   { key: "severity", label: "Severity", min: 1 },
@@ -256,8 +268,12 @@ const REQUIRED: { key: keyof ReportDraft; label: string; min: number }[] = [
   { key: "contactEmail", label: "Email", min: 5 },
   { key: "subscription", label: "Plan", min: 1 },
   { key: "title", label: "Summary", min: 8 },
-  { key: "steps", label: "Steps", min: 16 },
   { key: "actual", label: "What happened", min: 8 },
+];
+
+/** Preferred — shown as missing but do not block READY */
+const PREFERRED: { key: keyof ReportDraft; label: string; min: number }[] = [
+  { key: "steps", label: "Steps to reproduce", min: 8 },
 ];
 
 function fieldFilled(draft: ReportDraft, key: keyof ReportDraft, min: number) {
@@ -267,13 +283,26 @@ function fieldFilled(draft: ReportDraft, key: keyof ReportDraft, min: number) {
 }
 
 export function scoreReport(draft: ReportDraft) {
-  const missing = REQUIRED.filter((item) => {
+  const missingRequired = REQUIRED.filter((item) => {
     if (item.key === "contactEmail") return !isValidEmail(draft.contactEmail);
     return !fieldFilled(draft, item.key, item.min);
   }).map((item) => item.label);
-  const filled = REQUIRED.length - missing.length;
-  const percent = Math.round((filled / REQUIRED.length) * 100);
-  return { percent, missing, ready: missing.length === 0 };
+
+  const missingPreferred = PREFERRED.filter(
+    (item) => !fieldFilled(draft, item.key, item.min),
+  ).map((item) => item.label);
+
+  const totalTracked = REQUIRED.length + PREFERRED.length;
+  const filled =
+    totalTracked - missingRequired.length - missingPreferred.length;
+  const percent = Math.round((filled / totalTracked) * 100);
+
+  return {
+    percent,
+    missing: missingRequired, // only required block READY
+    missingPreferred,
+    ready: missingRequired.length === 0,
+  };
 }
 
 export function isDraftBlank(draft: ReportDraft) {
@@ -291,68 +320,95 @@ export function isDraftBlank(draft: ReportDraft) {
   );
 }
 
-export function formatReport(draft: ReportDraft, filedAt = new Date()) {
+function buildSystemInfo(draft: ReportDraft): string {
+  const parts = [
+    draft.device && `Device: ${draft.device}`,
+    draft.os && `OS: ${draft.os}`,
+    draft.browser && `Browser: ${draft.browser}`,
+    draft.screen && `Screen: ${draft.screen}`,
+    draft.viewport && `Viewport: ${draft.viewport}`,
+    draft.language && `Language: ${draft.language}`,
+    draft.timezone && `Timezone: ${draft.timezone}`,
+  ].filter(Boolean);
+  return parts.length > 0 ? parts.join(" · ") : "—";
+}
+
+function buildBugDescription(draft: ReportDraft): string {
+  const title = draft.title.trim();
+  const actual = draft.actual.trim();
+  const expected = draft.expected.trim();
+
+  const chunks: string[] = [];
+  if (title) chunks.push(title);
+  if (actual) chunks.push(`Actual: ${actual}`);
+  if (expected) chunks.push(`Expected: ${expected}`);
+  return chunks.length > 0 ? chunks.join("\n") : "—";
+}
+
+function buildImpact(draft: ReportDraft): string {
+  const freq = labelOf(FREQUENCIES, draft.frequency);
+  const actual = draft.actual.trim();
+  const expected = draft.expected.trim();
+
+  const parts: string[] = [];
+  if (actual) parts.push(actual);
+  if (expected) parts.push(`Expected: ${expected}`);
+  if (freq && freq !== "—") parts.push(`Frequency: ${freq}`);
+  return parts.length > 0 ? parts.join(" ") : "—";
+}
+
+/** Emits the exact paste template used by the xai-bug-reporter skill */
+export function formatReport(draft: ReportDraft, _filedAt = new Date()) {
   const product = productById(draft.product);
-  const date = filedAt.toISOString().slice(0, 10);
+  const { ready } = scoreReport(draft);
+  const status = ready ? "READY" : "INCOMPLETE";
+
+  const severity = labelOf(SEVERITIES, draft.severity);
+  const category = product?.category ?? "Other";
+  const impact = buildImpact(draft);
+  const platform = labelOf(PLATFORMS, draft.platform);
+  const tier = labelOf(TIERS, draft.subscription);
+  const systemInfo = buildSystemInfo(draft);
+  const description = buildBugDescription(draft);
+  const share = draft.shareLink.trim() || "—";
+  const steps = draft.steps.trim() || "—";
+  const notes = draft.extra.trim() || "—";
+  const frequency = labelOf(FREQUENCIES, draft.frequency);
+
   const lines = [
-    "INCIDENT REPORT",
-    "===============",
-    `Filed via xAI Bug Reporter · ${date}`,
+    "-----BEGIN REPORT-----",
+    `Status: ${status}`,
     "",
-    "Reporter",
-    "--------",
-    `Email:       ${draft.contactEmail.trim() || "—"}`,
-    `Plan:        ${labelOf(TIERS, draft.subscription)}`,
+    "=== TRIAGE ===",
+    `Severity: ${severity}`,
+    `Category: ${category}`,
+    `Impact: ${impact}`,
     "",
-    "Incident",
-    "--------",
-    `Product:     ${product?.label ?? "—"}`,
-    `Severity:    ${labelOf(SEVERITIES, draft.severity)}`,
-    `Platform:    ${labelOf(PLATFORMS, draft.platform)}`,
-    `Frequency:   ${labelOf(FREQUENCIES, draft.frequency)}`,
-    `Inbox:       ${product?.inbox ?? "support@x.ai"}`,
+    "=== REQUIRED ===",
+    `Account email: ${draft.contactEmail.trim() || "—"}`,
+    `Subscription tier: ${tier}`,
+    `Platform: ${platform}`,
+    `System & app info: ${systemInfo}`,
+    `Bug description: ${description}`,
     "",
-    "Summary",
-    "-------",
-    draft.title.trim() || "—",
+    "Evidence:",
+    `  Conversation share link: ${share}`,
+    `  Screenshot: —`,
     "",
-    "Steps to reproduce",
-    "------------------",
-    draft.steps.trim() || "—",
+    "=== PREFERRED ===",
+    `Steps to reproduce: ${steps}`,
     "",
-    "Expected",
-    "--------",
-    draft.expected.trim() || "—",
+    "=== BILLING (if applicable) ===",
+    "Invoice / receipt number: —",
     "",
-    "Actual",
-    "------",
-    draft.actual.trim() || "—",
-    "",
-    "System",
-    "------",
-    `Browser:     ${draft.browser || "—"}`,
-    `OS:          ${draft.os || "—"}`,
-    `Device:      ${draft.device || "—"}`,
-    `Screen:      ${draft.screen || "—"}`,
-    `Viewport:    ${draft.viewport || "—"}`,
-    `Language:    ${draft.language || "—"}`,
-    `Timezone:    ${draft.timezone || "—"}`,
-    `User-Agent:  ${draft.userAgent || "—"}`,
+    "=== NOTES ===",
+    `Workaround: —`,
+    `Frequency: ${frequency}`,
+    `Reported from inside the chat where the bug occurred: —`,
+    `Product: ${product?.label ?? "—"}`,
+    `Notes: ${notes}`,
+    "-----END REPORT-----",
   ];
-
-  if (draft.shareLink.trim()) {
-    lines.push("", "Share link", "----------", draft.shareLink.trim());
-  }
-  if (draft.extra.trim()) {
-    lines.push("", "Notes", "-----", draft.extra.trim());
-  }
-
-  lines.push(
-    "",
-    "---",
-    "Please attach screenshots if you have them.",
-    "Status: https://status.x.ai",
-  );
 
   return lines.join("\n");
 }
