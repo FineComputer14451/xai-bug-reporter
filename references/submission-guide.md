@@ -1,20 +1,21 @@
-# Submission guide — automation boundaries
+# Submission guide — Chat boundaries
 
-xAI provides **no public bug-submission API**. All automation in this skill stops at a validated, paste-ready report.
+xAI provides **no public bug-submission API**. This skill stops at a validated, paste-ready report **in Chat**.
 
 Canonical channels: `references/official-process.md`.
 
-## What the skill automates
+## What the skill does in Chat
 
-1. Triage (severity scoring + category + impact)
-2. Field collection and missing-field enforcement
-3. Platform / system / GPU info gathering
-4. Share-link parsing and live validation
+1. Triage (severity + category + impact), confirmed with the user
+2. Field collection in this conversation, one or two questions at a time
+3. Ask for device / OS / app or browser version (do not probe the host)
+4. Structural share-link check (host + nonempty share id only)
 5. Report assembly and completeness validation
-6. Production of a single paste block + clear next steps
+6. A single paste block + ⋮ **Report an issue** steps
 
 ## What the skill never does
 
+- Run bash, curl, terminal commands, or `scripts/*.sh`
 - POST or otherwise submit a ticket to xAI servers
 - Claim that a report has been “filed” or “ticketed”
 - Open the Report an issue UI on the user’s behalf (the user must do that)
@@ -25,7 +26,7 @@ Canonical channels: `references/official-process.md`.
 ```
 Your report is ready. To submit:
 
-1. Stay in (or open) the Grok chat where the issue occurred, or any Grok chat.
+1. Stay in this Grok chat (or the chat where the issue occurred).
 2. Tap the three-dots (⋮) menu → Report an issue / Report Issue.
 3. Paste the block below.
 4. Attach a screenshot if you have one.

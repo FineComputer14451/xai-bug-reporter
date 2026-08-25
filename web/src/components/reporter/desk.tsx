@@ -137,9 +137,9 @@ export function Desk() {
                 xAI Bug Reporter
               </h1>
               <p className="mt-0.5 line-clamp-2 text-xs leading-snug text-subtle">
-                Grok skill for official xAI bug reporting — triage, share-link
-                validation, platform collection, and paste-ready Report an
-                issue packages
+                Grok Chat skill for official xAI bug reporting — in-chat
+                triage, share-link checks, and a paste-ready Report an issue
+                package
               </p>
             </div>
           </div>

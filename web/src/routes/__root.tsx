@@ -16,7 +16,7 @@ export const Route = createRootRoute({
       {
         name: "description",
         content:
-          "Grok skill for official xAI bug reporting — triage, share-link validation, platform collection, and paste-ready Report an issue packages",
+          "Grok Chat skill for official xAI bug reporting — in-chat triage, share-link checks, and a paste-ready Report an issue package",
       },
     ],
     links: [

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Pack a consumer-facing zip (SKILL.md + LICENSE + assets + references; no scripts).
+# Pack a Chat-facing zip (SKILL.md + LICENSE + assets + references; no scripts).
 # Usage: bash scripts/pack-skill.sh
 # Writes dist/xai-bug-reporter.zip
 

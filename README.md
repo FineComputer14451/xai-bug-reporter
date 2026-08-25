@@ -1,8 +1,8 @@
 # xai-bug-reporter
 
-**Grok skill** that encodes the official xAI / Grok bug-reporting and human-support process.
+**Grok Chat skill** (grok.com, iOS, Android) that encodes the official xAI / Grok bug-reporting and human-support process.
 
-It guides agents (and users) through formal triage, evidence collection, platform info, share-link validation, and a paste-ready report for the in-product **Report an issue** flow — without inventing support channels or claiming to file tickets on xAI servers.
+It guides the conversation through formal triage, evidence collection, and a paste-ready report for the in-product **Report an issue** flow — without inventing support channels, running scripts, or claiming to file tickets on xAI servers.
 
 **Web app:** [xAI Bug Reporter](https://finecomputer14451.github.io/xai-bug-reporter) — structured desk for email, subscription tier, system info, and a paste-ready package.
 
@@ -36,13 +36,15 @@ GitHub Pages publishes [`docs/`](docs/) via [Deploy GitHub Pages](https://github
 
 ## Install
 
+**Primary host is Grok Chat** — grok.com, iOS, and Android ([Grok Skills](https://x.ai/news/grok-skills)). Upload `SKILL.md` (or the consumer zip). The agent follows that file only and must not run bash.
+
 ### grok.com (web)
 
 Official: Skills are on grok.com; create by conversation, upload a file, or Skill Creator. [grok.com/skills](https://grok.com/skills)
 
 1. Upload this repo’s [`SKILL.md`](https://github.com/FineComputer14451/xai-bug-reporter/blob/main/SKILL.md) (use **Raw** to download), or the zip from `bash scripts/pack-skill.sh` (`dist/xai-bug-reporter.zip`). Skill hosts reject zip members that are symlinks, so do not upload an older GitHub archive of this repo that still contained `.grok/skills` links.
 2. Ask Skill Creator to save it as skill `xai-bug-reporter`.
-3. Invoke with “report a bug” / “use xai-bug-reporter”.
+3. In **any Grok chat**, say “report a bug” / “this is broken” / “use xai-bug-reporter”. Stay in the chat where the bug happened.
 
 Community-reported UI (not a product spec): Skills & connectors → add skill; Customize > Skills.
 
@@ -50,12 +52,12 @@ This project does **not** claim listing in an official xAI skill store.
 
 ### Android (and iOS)
 
-Skills are account-scoped and available on grok.com, iOS, and Android ([Grok Skills](https://x.ai/news/grok-skills)).
+Skills are account-scoped. Install once, then use in the Grok app chat.
 
 - Open Skills in the Grok app and upload `SKILL.md` or the zip, **or**
 - Install on grok.com while signed into the same account.
 
-Do not invent exact Android Settings labels. Bash scripts do not run in the Grok app; the `SKILL.md` body is enough.
+Do not invent exact Android Settings labels. Bash scripts do not run in Chat; the `SKILL.md` body is enough.
 
 ### Grok Build (CLI)
 
@@ -85,6 +87,7 @@ Then in Grok Build:
 
 - `/xai-bug-reporter`
 - `/skills` → xai-bug-reporter
+- `/config-agents` → xai-bug-reporter, or `grok --agent xai-bug-reporter`
 - Auto-invoke on “report a bug”, “reach a human”, “xAI support”, …
 
 Scripts are committed executable (`100755`). Examples below use `bash scripts/…` from the **skill directory**, which works even if `+x` was lost on copy. `prepare-submission.sh` also invokes sibling scripts via `bash` for the same reason.
@@ -112,18 +115,18 @@ Canonical reference: [xAI FAQ — How do I report a bug or reach a human?](https
 
 ## Features
 
-Bash helpers (`scripts/*.sh`) are **Grok Build optional**. On grok.com / iOS / Android the agent follows `SKILL.md` only and must not run those scripts.
+Chat (grok.com / iOS / Android) follows `SKILL.md` only and **must not run scripts**. Bash helpers in `scripts/` are optional CLI for Grok Build / local use.
 
 | Area | What you get |
 |------|----------------|
 | **In-chat activation** | Works *inside* the conversation where the bug happened — no forced new chat |
+| **Conversational collection** | One or two questions at a time; infer Platform from the current Chat client when obvious |
 | **Formal triage** | Severity (Critical/High/Medium/Low), category, impact statement |
-| **Automated severity scoring** | Keyword suggestion via `score-severity.sh` (**Grok Build optional**; always confirm with user) |
-| **Platform collection** | Ask the user for device / OS / app version; Grok Build may run `collect-platform-info.sh` |
-| **Share-link pipeline** | Structural host + share-id check; Grok Build may add live HTTP validation |
+| **Platform collection** | Ask the user for device / OS / app or browser version |
+| **Share-link pipeline** | Structural host + share-id check only (no curl) |
 | **Field enforcement** | Required fields must be present before “ready to submit” |
-| **Paste-ready package** | Assemble the BEGIN/END block in chat; Grok Build: `assemble-report.sh` + `prepare-submission.sh` |
-| **Hard boundaries** | Never invent unofficial inboxes; no ticket-filing claims |
+| **Paste-ready package** | Assemble the BEGIN/END block in this chat |
+| **Hard boundaries** | Never invent unofficial inboxes; no ticket-filing claims; never run bash in Chat |
 
 ---
 
@@ -141,28 +144,32 @@ Explicit:
 
 ```text
 Activate xai-bug-reporter
+use xai-bug-reporter
 /xai-bug-reporter
 ```
 
-**In-chat rule:** if the failure happened in the *current* thread, stay there. Treat this conversation as primary evidence and help produce a share link for *this* chat.
+**In-chat rule:** if the failure happened in the *current* thread, stay there. Treat this conversation as primary evidence and help produce a share link for *this* chat. Ask one or two questions at a time.
 
 ---
 
 ## Typical agent flow
 
-On grok.com / iOS / Android, follow `SKILL.md` and do not run scripts. On Grok Build you may use the helpers below.
+On grok.com / iOS / Android, follow `SKILL.md` and do not run scripts.
 
-1. Confirm in-chat context (bug here vs elsewhere).
-2. Triage — severity table in `SKILL.md` (Grok Build: `score-severity.sh`) → confirm Severity + Category + Impact.
-3. Evidence — share link of the failing chat (structural id check; Grok Build: `parse-share-link.sh` + `validate-share-link.sh`) and/or screenshot.
-4. Required fields — email, tier, platform, system/app info, description, steps. Ask the user; do not probe the host on grok.com / mobile.
-5. Missing-field loop — list gaps; do not emit a complete report until required fields exist.
-6. Assemble & validate — fill the paste template (Grok Build: `prepare-submission.sh` or assemble + `validate-report.sh`).
-7. Hand off — paste-ready block + exact **Report an issue** steps (billing: receipt email).
+1. Confirm in-chat context (bug here vs elsewhere). Stay in this thread.
+2. Infer Platform when obvious (grok.com → Web, iOS app → iOS, Android app → Android).
+3. Triage — severity table in `SKILL.md` → confirm Severity + Category + Impact.
+4. Evidence — share link of *this* chat (structural id check) and/or a screenshot attached here.
+5. Required fields — email, tier, platform, system/app info, description, steps. Ask one or two questions at a time; do not probe the host.
+6. Missing-field loop — list gaps; do not emit a complete report until required fields exist.
+7. Assemble — fill the paste template in this chat.
+8. Hand off — paste-ready block + ⋮ **Report an issue** (billing: receipt email).
 
 ---
 
-## Scripts
+## Scripts (optional CLI)
+
+Not used in Chat. Grok Build / local developers may run these with `bash scripts/…`.
 
 | Script | Purpose |
 |--------|---------|
@@ -240,12 +247,17 @@ Platform tips:
 
 ```
 xai-bug-reporter/
-├── SKILL.md                      # Agent instructions + frontmatter
+├── SKILL.md                      # Chat skill (instructions + frontmatter)
+├── AGENTS.md                     # Grok Build project rules
 ├── README.md
 ├── LICENSE
 ├── docs/                         # GitHub Pages site (https://finecomputer14451.github.io/xai-bug-reporter/)
 ├── web/                          # Grok Build companion desk source
-├── .grok/skills/xai-bug-reporter/  # Grok Build project skill (regular files)
+├── .grok/skills/xai-bug-reporter/  # Project skill + supporting files
+├── .grok/agents/                 # Grok Build agent + supporting files
+│   ├── xai-bug-reporter.md
+│   ├── REFERENCES.md
+│   └── HANDOFF-TEMPLATES.md
 ├── .github/
 │   ├── dependabot.yml            # Weekly Actions updates
 │   └── workflows/validate.yml

@@ -23,9 +23,13 @@ jobs:
           set -euo pipefail
           required=(
             SKILL.md
+            AGENTS.md
             README.md
             LICENSE
             .grok/skills/xai-bug-reporter/SKILL.md
+            .grok/agents/xai-bug-reporter.md
+            .grok/agents/REFERENCES.md
+            .grok/agents/HANDOFF-TEMPLATES.md
             assets/report-checklist.md
             assets/report.env.example
             references/official-process.md
@@ -63,7 +67,12 @@ jobs:
           # description should mention bug/report triggers
           grep -qiE 'report a bug|report an issue|reach a human' SKILL.md
           grep -q '/xai-bug-reporter' SKILL.md
-          grep -q 'SKILL_DIR' SKILL.md
+          grep -q 'NEVER run bash' SKILL.md
+          grep -q 'one or two questions' SKILL.md
+          if grep -q 'SKILL_DIR' SKILL.md; then
+            echo "Chat-primary SKILL.md must not tell agents to use SKILL_DIR" >&2
+            exit 1
+          fi
           # consumer hosts are instructions-only; do not advertise "Requires bash"
           compat=$(grep -E '^compatibility:' SKILL.md || true)
           if echo "$compat" | grep -qi -- 'Requires bash'; then

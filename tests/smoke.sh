@@ -249,6 +249,33 @@ else
   echo "OK   project skill assets/ references/ scripts/ match repo copies"
 fi
 
+ran=$((ran + 1))
+agent="$ROOT/.grok/agents/xai-bug-reporter.md"
+if [[ ! -f "$ROOT/AGENTS.md" ]]; then
+  fail=$((fail + 1))
+  echo "FAIL AGENTS.md missing"
+elif [[ ! -f "$agent" ]] || ! grep -q '^name: xai-bug-reporter$' "$agent"; then
+  fail=$((fail + 1))
+  echo "FAIL .grok/agents/xai-bug-reporter.md missing or unnamed"
+elif [[ ! -f "$ROOT/.grok/agents/REFERENCES.md" || ! -f "$ROOT/.grok/agents/HANDOFF-TEMPLATES.md" ]]; then
+  fail=$((fail + 1))
+  echo "FAIL agent supporting files REFERENCES.md / HANDOFF-TEMPLATES.md missing"
+else
+  echo "OK   agent + supporting files present"
+fi
+
+ran=$((ran + 1))
+if grep -qE 'SKILL_DIR|MAY run `bash|MAY run bash' \
+  "$ROOT/AGENTS.md" \
+  "$ROOT/.grok/agents/xai-bug-reporter.md" \
+  "$ROOT/.grok/agents/REFERENCES.md" \
+  "$ROOT/.grok/agents/HANDOFF-TEMPLATES.md"; then
+  fail=$((fail + 1))
+  echo "FAIL agent supporting files tell Chat to run bash"
+else
+  echo "OK   agent supporting files do not tell Chat to run bash"
+fi
+
 # GitHub "Download ZIP" is git archive with a repo-branch prefix.
 # grok.com / skill hosts reject any symlink member in that zip.
 ran=$((ran + 1))
@@ -378,13 +405,57 @@ else
 fi
 
 ran=$((ran + 1))
+if echo "$skill_body" | grep -qE 'SKILL_DIR|MAY run `bash|MAY run bash'; then
+  fail=$((fail + 1))
+  echo "FAIL packed SKILL.md still tells Chat agents to run bash / SKILL_DIR"
+else
+  echo "OK   packed SKILL.md does not tell Chat agents to run bash"
+fi
+
+ran=$((ran + 1))
+if ! echo "$skill_body" | grep -q -- 'one or two questions'; then
+  fail=$((fail + 1))
+  echo "FAIL packed SKILL.md missing Chat conversational collection"
+else
+  echo "OK   packed SKILL.md collects fields one or two questions at a time"
+fi
+
+ran=$((ran + 1))
+if ! echo "$skill_body" | grep -q -- 'Stay in this Grok chat'; then
+  fail=$((fail + 1))
+  echo "FAIL packed SKILL.md missing in-chat Report an issue hand-off"
+else
+  echo "OK   packed SKILL.md hands off in the current Grok chat"
+fi
+
+ran=$((ran + 1))
+if ! echo "$skill_body" | grep -q -- 'references/official-process.md'; then
+  fail=$((fail + 1))
+  echo "FAIL packed SKILL.md does not point at supporting references"
+else
+  echo "OK   packed SKILL.md points at supporting references"
+fi
+
+ran=$((ran + 1))
+if ! echo "$listing" | grep -q -- 'xai-bug-reporter/assets/report-checklist.md'; then
+  fail=$((fail + 1))
+  echo "FAIL zip missing assets/report-checklist.md"
+else
+  echo "OK   zip contains supporting assets/report-checklist.md"
+fi
+
+ran=$((ran + 1))
 compat=$(echo "$skill_body" | grep -E '^compatibility:' || true)
 if echo "$compat" | grep -qi -- 'Requires bash'; then
   fail=$((fail + 1))
   echo "FAIL packed compatibility requires bash"
   echo "$compat"
+elif ! echo "$compat" | grep -qi -- 'Chat'; then
+  fail=$((fail + 1))
+  echo "FAIL packed compatibility is not Chat-primary"
+  echo "$compat"
 else
-  echo "OK   packed compatibility does not require bash"
+  echo "OK   packed compatibility is Chat instructions-only"
 fi
 
 ran=$((ran + 1))
@@ -392,8 +463,21 @@ share_guide=$(zip_extract "$ZIP" xai-bug-reporter/references/share-link-guide.md
 if echo "$share_guide" | grep -q -- 'Always run `scripts/'; then
   fail=$((fail + 1))
   echo "FAIL packed share-link-guide tells hosts to Always run scripts"
+elif echo "$share_guide" | grep -qE 'SKILL_DIR|MAY run `bash'; then
+  fail=$((fail + 1))
+  echo "FAIL packed share-link-guide tells Chat agents to run bash"
 else
-  echo "OK   packed share-link-guide does not Always run scripts"
+  echo "OK   packed share-link-guide does not tell Chat agents to run scripts"
+fi
+
+ran=$((ran + 1))
+packed_refs=$(zip_extract "$ZIP" xai-bug-reporter/references/triage-protocol.md 2>/dev/null || true)
+packed_refs+=$(zip_extract "$ZIP" xai-bug-reporter/references/submission-guide.md 2>/dev/null || true)
+if echo "$packed_refs" | grep -qE 'SKILL_DIR|MAY run `bash'; then
+  fail=$((fail + 1))
+  echo "FAIL packed references tell Chat agents to run bash"
+else
+  echo "OK   packed references do not tell Chat agents to run bash"
 fi
 
 echo
