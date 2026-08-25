@@ -195,28 +195,99 @@ else
   echo "OK   Grok handoff uses receipt email, not support@x.ai"
 fi
 
-# --- project skill must be a real symlink, not a path-text blob ---
+# --- no symlinks anywhere (skill hosts reject zip symlink members) ---
 proj="$ROOT/.grok/skills/xai-bug-reporter"
 ran=$((ran + 1))
-if [[ ! -L "$proj/SKILL.md" ]]; then
+worktree_links=""
+while IFS= read -r path; do
+  if [[ -L "$ROOT/$path" ]]; then
+    worktree_links+="$path"$'\n'
+  fi
+done < <(git -C "$ROOT" ls-files; git -C "$ROOT" ls-files -o --exclude-standard)
+if [[ -n "$worktree_links" ]]; then
   fail=$((fail + 1))
-  echo "FAIL project SKILL.md is not a symlink"
-elif ! grep -q '^name: xai-bug-reporter$' "$proj/SKILL.md"; then
-  fail=$((fail + 1))
-  echo "FAIL project SKILL.md does not resolve to skill frontmatter"
+  echo "FAIL tracked or unignored worktree paths are symlinks (upload rejects them)"
+  echo "$worktree_links" | head -20
 else
-  echo "OK   project SKILL.md is a symlink to the real skill"
+  echo "OK   tracked and unignored worktree paths are not symlinks"
 fi
 
 ran=$((ran + 1))
-if [[ ! -L "$proj/scripts" || ! -d "$proj/scripts" ]]; then
+tracked_links=$(git -C "$ROOT" ls-files -s | awk '$1=="120000"{print}')
+if [[ -n "$tracked_links" ]]; then
   fail=$((fail + 1))
-  echo "FAIL project scripts/ is not a symlink to a directory"
-elif [[ ! -f "$proj/scripts/score-severity.sh" ]]; then
-  fail=$((fail + 1))
-  echo "FAIL project scripts/ does not contain score-severity.sh"
+  echo "FAIL git index contains symlink mode 120000"
+  echo "$tracked_links" | head -20
 else
-  echo "OK   project scripts/ is a symlink to helpers"
+  echo "OK   git index contains no symlink mode 120000"
+fi
+
+ran=$((ran + 1))
+if [[ ! -f "$proj/SKILL.md" ]]; then
+  fail=$((fail + 1))
+  echo "FAIL project SKILL.md missing"
+elif ! grep -q '^name: xai-bug-reporter$' "$proj/SKILL.md"; then
+  fail=$((fail + 1))
+  echo "FAIL project SKILL.md missing skill frontmatter"
+elif ! cmp -s "$ROOT/SKILL.md" "$proj/SKILL.md"; then
+  fail=$((fail + 1))
+  echo "FAIL project SKILL.md differs from repo SKILL.md"
+else
+  echo "OK   project SKILL.md is a regular file matching repo SKILL.md"
+fi
+
+ran=$((ran + 1))
+if [[ ! -f "$proj/scripts/score-severity.sh" ]]; then
+  fail=$((fail + 1))
+  echo "FAIL project scripts/score-severity.sh missing"
+elif ! diff -rq "$ROOT/assets" "$proj/assets" >/dev/null \
+  || ! diff -rq "$ROOT/references" "$proj/references" >/dev/null \
+  || ! diff -rq "$ROOT/scripts" "$proj/scripts" >/dev/null; then
+  fail=$((fail + 1))
+  echo "FAIL project skill assets/references/scripts differ from repo copies"
+else
+  echo "OK   project skill assets/ references/ scripts/ match repo copies"
+fi
+
+# GitHub "Download ZIP" is git archive with a repo-branch prefix.
+# grok.com / skill hosts reject any symlink member in that zip.
+ran=$((ran + 1))
+archive="$tmpdir/git-archive.zip"
+# Archive the index (what a commit / GitHub ZIP would contain), not an
+# older HEAD that may still have the pre-fix symlinks.
+if ! tree=$(git -C "$ROOT" write-tree) || ! git -C "$ROOT" archive --format=zip -o "$archive" "$tree"; then
+  fail=$((fail + 1))
+  echo "FAIL git archive could not be created"
+else
+  set +e
+  archive_out=$(python3 - "$archive" <<'PY'
+import stat
+import sys
+import zipfile
+
+zf = zipfile.ZipFile(sys.argv[1])
+links = []
+for info in zf.infolist():
+    mode = (info.external_attr >> 16) & 0xFFFF
+    if stat.S_ISLNK(mode):
+        links.append(info.filename)
+if links:
+    print("SYMLINKS")
+    for name in links:
+        print(name)
+    sys.exit(1)
+print("NONE")
+PY
+)
+  archive_rc=$?
+  set -e
+  if [[ "$archive_rc" -ne 0 ]]; then
+    fail=$((fail + 1))
+    echo "FAIL git archive contains symlink members (skill upload rejects them)"
+    echo "$archive_out" | head -20
+  else
+    echo "OK   git archive contains no symlink members"
+  fi
 fi
 
 # --- consumer zip: SKILL.md present, no scripts/ ---

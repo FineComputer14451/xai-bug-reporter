@@ -73,21 +73,30 @@ jobs:
           fi
           echo "Frontmatter OK"
 
-      - name: Project skill is a git symlink
+      - name: No symlinks in git index or worktree
         run: |
           set -euo pipefail
+          # Skill hosts reject zip members that are symlinks
+          # (GitHub Download ZIP is git archive + repo-branch prefix).
           while read -r mode _sha _stage path; do
-            if [[ "$mode" != "120000" ]]; then
-              echo "expected 120000 symlink, got $mode $path" >&2
+            if [[ "$mode" == "120000" ]]; then
+              echo "tracked symlink not allowed: $path" >&2
               exit 1
             fi
-            echo "✓ git mode $mode $path"
-          done < <(git ls-files -s .grok/skills/xai-bug-reporter/)
-          [[ -L .grok/skills/xai-bug-reporter/SKILL.md ]]
+          done < <(git ls-files -s)
+          while IFS= read -r path; do
+            if [[ -L "$path" ]]; then
+              echo "worktree symlink not allowed: $path" >&2
+              exit 1
+            fi
+          done < <(git ls-files; git ls-files -o --exclude-standard)
+          [[ -f .grok/skills/xai-bug-reporter/SKILL.md ]]
           grep -q '^name: xai-bug-reporter$' .grok/skills/xai-bug-reporter/SKILL.md
-          [[ -d .grok/skills/xai-bug-reporter/scripts ]]
-          [[ -f .grok/skills/xai-bug-reporter/scripts/score-severity.sh ]]
-          echo "Project skill symlink OK"
+          cmp -s SKILL.md .grok/skills/xai-bug-reporter/SKILL.md
+          diff -rq assets .grok/skills/xai-bug-reporter/assets
+          diff -rq references .grok/skills/xai-bug-reporter/references
+          diff -rq scripts .grok/skills/xai-bug-reporter/scripts
+          echo "No git or worktree symlinks; project skill copies match"
 
       - name: Bash syntax (bash -n)
         run: |

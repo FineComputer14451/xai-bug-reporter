@@ -40,7 +40,7 @@ GitHub Pages publishes [`docs/`](docs/) via [Deploy GitHub Pages](https://github
 
 Official: Skills are on grok.com; create by conversation, upload a file, or Skill Creator. [grok.com/skills](https://grok.com/skills)
 
-1. Upload this repo’s [`SKILL.md`](https://github.com/FineComputer14451/xai-bug-reporter/blob/main/SKILL.md) (use **Raw** to download), or the zip from `bash scripts/pack-skill.sh` (`dist/xai-bug-reporter.zip`).
+1. Upload this repo’s [`SKILL.md`](https://github.com/FineComputer14451/xai-bug-reporter/blob/main/SKILL.md) (use **Raw** to download), or the zip from `bash scripts/pack-skill.sh` (`dist/xai-bug-reporter.zip`). Skill hosts reject zip members that are symlinks, so do not upload an older GitHub archive of this repo that still contained `.grok/skills` links.
 2. Ask Skill Creator to save it as skill `xai-bug-reporter`.
 3. Invoke with “report a bug” / “use xai-bug-reporter”.
 
@@ -64,18 +64,21 @@ Grok Build loads a directory that contains `SKILL.md`. The folder name **must** 
 **User-wide** (every project):
 
 ```bash
-git clone https://github.com/FineComputer14451/xai-bug-reporter.git
-ln -sfn "$(pwd)/xai-bug-reporter" ~/.grok/skills/xai-bug-reporter
+git clone https://github.com/FineComputer14451/xai-bug-reporter.git ~/.grok/skills/xai-bug-reporter
 grok inspect | grep xai-bug-reporter
 ```
 
-**This repo:** `.grok/skills/xai-bug-reporter/` is already linked, so `grok` started in the clone picks it up as a project skill.
+**This repo:** `.grok/skills/xai-bug-reporter/` is a real copy of `SKILL.md`, `assets/`, `references/`, and `scripts/` (not symlinks), so `grok` started in the clone picks it up as a project skill and GitHub Download ZIP stays upload-safe.
 
-**Another project:**
+**Another project** (copy files — do not `ln -s` into a git tree; skill hosts reject zip members that are symlinks):
 
 ```bash
-mkdir -p /path/to/project/.grok/skills
-ln -sfn /path/to/xai-bug-reporter /path/to/project/.grok/skills/xai-bug-reporter
+mkdir -p /path/to/project/.grok/skills/xai-bug-reporter
+cp -R /path/to/xai-bug-reporter/SKILL.md \
+      /path/to/xai-bug-reporter/assets \
+      /path/to/xai-bug-reporter/references \
+      /path/to/xai-bug-reporter/scripts \
+      /path/to/project/.grok/skills/xai-bug-reporter/
 ```
 
 Then in Grok Build:
@@ -242,7 +245,7 @@ xai-bug-reporter/
 ├── LICENSE
 ├── docs/                         # GitHub Pages site (https://finecomputer14451.github.io/xai-bug-reporter/)
 ├── web/                          # Grok Build companion desk source
-├── .grok/skills/xai-bug-reporter/  # Grok Build project skill (symlinks)
+├── .grok/skills/xai-bug-reporter/  # Grok Build project skill (regular files)
 ├── .github/
 │   ├── dependabot.yml            # Weekly Actions updates
 │   └── workflows/validate.yml
