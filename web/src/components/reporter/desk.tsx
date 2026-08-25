@@ -394,14 +394,53 @@ export function Desk() {
                 onChange={(e) => setField("shareLink", e.target.value)}
               />
             </Field>
-            <Field label="Notes" htmlFor="extra">
-              <Textarea
-                id="extra"
-                value={draft.extra}
-                placeholder="App version, anything the snapshot missed"
-                onChange={(e) => setField("extra", e.target.value)}
+
+            <Field label="Screenshot" htmlFor="screenshot">
+              <Input
+                id="screenshot"
+                value={draft.screenshot}
+                placeholder='e.g. "yes", "attached", or short description'
+                onChange={(e) => setField("screenshot", e.target.value)}
               />
             </Field>
+
+            <Field label="Workaround" htmlFor="workaround">
+              <Textarea
+                id="workaround"
+                value={draft.workaround}
+                placeholder="Any temporary fix or way around the problem"
+                onChange={(e) => setField("workaround", e.target.value)}
+              />
+            </Field>
+
+            <p className="mb-2 text-xs font-medium tracking-wide text-subtle">
+              Reported from the chat where the bug occurred?
+            </p>
+            <ChipGroup>
+              <Chip
+                selected={draft.reportedFromChat === "yes"}
+                onClick={() => setField("reportedFromChat", "yes")}
+              >
+                Yes
+              </Chip>
+              <Chip
+                selected={draft.reportedFromChat === "no"}
+                onClick={() => setField("reportedFromChat", "no")}
+              >
+                No
+              </Chip>
+            </ChipGroup>
+
+            <div className="mt-4">
+              <Field label="Additional notes" htmlFor="extra">
+                <Textarea
+                  id="extra"
+                  value={draft.extra}
+                  placeholder="App version, anything the snapshot missed"
+                  onChange={(e) => setField("extra", e.target.value)}
+                />
+              </Field>
+            </div>
           </Section>
 
           <Section n="07" title="Drafts on this device">

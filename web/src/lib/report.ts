@@ -156,6 +156,12 @@ export type ReportDraft = {
   shareLink: string;
   extra: string;
   contactEmail: string;
+  /** Free-text workaround description */
+  workaround: string;
+  /** Free-text: "yes", "attached", short description, etc. */
+  screenshot: string;
+  /** Whether the report is being prepared from the chat where the bug occurred */
+  reportedFromChat: "yes" | "no" | null;
 } & SystemInfo;
 
 export type SavedDraft = ReportDraft & {
@@ -187,6 +193,9 @@ export const emptyDraft = (): ReportDraft => ({
   shareLink: "",
   extra: "",
   contactEmail: "",
+  workaround: "",
+  screenshot: "",
+  reportedFromChat: null,
   ...emptySystem(),
 });
 
@@ -316,7 +325,10 @@ export function isDraftBlank(draft: ReportDraft) {
     !draft.expected.trim() &&
     !draft.actual.trim() &&
     !draft.shareLink.trim() &&
-    !draft.extra.trim()
+    !draft.extra.trim() &&
+    !draft.workaround.trim() &&
+    !draft.screenshot.trim() &&
+    draft.reportedFromChat == null
   );
 }
 
@@ -337,11 +349,15 @@ function buildBugDescription(draft: ReportDraft): string {
   const title = draft.title.trim();
   const actual = draft.actual.trim();
   const expected = draft.expected.trim();
+  const extra = draft.extra.trim();
+  const product = productById(draft.product)?.label;
 
   const chunks: string[] = [];
   if (title) chunks.push(title);
   if (actual) chunks.push(`Actual: ${actual}`);
   if (expected) chunks.push(`Expected: ${expected}`);
+  if (product) chunks.push(`Product: ${product}`);
+  if (extra) chunks.push(extra);
   return chunks.length > 0 ? chunks.join("\n") : "—";
 }
 
@@ -372,8 +388,15 @@ export function formatReport(draft: ReportDraft, _filedAt = new Date()) {
   const description = buildBugDescription(draft);
   const share = draft.shareLink.trim() || "—";
   const steps = draft.steps.trim() || "—";
-  const notes = draft.extra.trim() || "—";
   const frequency = labelOf(FREQUENCIES, draft.frequency);
+  const workaround = draft.workaround.trim() || "—";
+  const screenshot = draft.screenshot.trim() || "—";
+  const reportedFrom =
+    draft.reportedFromChat === "yes"
+      ? "yes"
+      : draft.reportedFromChat === "no"
+        ? "no"
+        : "—";
 
   const lines = [
     "-----BEGIN REPORT-----",
@@ -393,7 +416,7 @@ export function formatReport(draft: ReportDraft, _filedAt = new Date()) {
     "",
     "Evidence:",
     `  Conversation share link: ${share}`,
-    `  Screenshot: —`,
+    `  Screenshot: ${screenshot}`,
     "",
     "=== PREFERRED ===",
     `Steps to reproduce: ${steps}`,
@@ -402,11 +425,9 @@ export function formatReport(draft: ReportDraft, _filedAt = new Date()) {
     "Invoice / receipt number: —",
     "",
     "=== NOTES ===",
-    `Workaround: —`,
+    `Workaround: ${workaround}`,
     `Frequency: ${frequency}`,
-    `Reported from inside the chat where the bug occurred: —`,
-    `Product: ${product?.label ?? "—"}`,
-    `Notes: ${notes}`,
+    `Reported from inside the chat where the bug occurred: ${reportedFrom}`,
     "-----END REPORT-----",
   ];
 
