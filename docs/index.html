@@ -75,6 +75,7 @@
       background: var(--raised); color: var(--fg); cursor: pointer; font: inherit; font-size: 0.85rem;
     }
     .btn.primary { background: var(--fg); color: var(--bg); border-color: var(--fg); }
+    .btn:disabled { opacity: 0.4; cursor: not-allowed; }
     .sys { font-family: "IBM Plex Mono", monospace; font-size: 11px; color: var(--muted); display: grid; gap: 0.25rem; }
     .sys b { color: var(--subtle); font-weight: 500; min-width: 5.5rem; display: inline-block; }
     .gh { width: 44px; height: 44px; display: grid; place-items: center; color: var(--subtle); border-radius: 8px; }
@@ -144,25 +145,36 @@
       <section>
         <div class="n">04</div>
         <h2>Write it up</h2>
+        <label>Category</label>
+        <div class="chips" id="categories"></div>
         <label for="title">Summary</label>
         <input id="title" maxlength="140" placeholder="One-line description" />
         <label for="actual">What happened</label>
         <textarea id="actual" placeholder="What you saw"></textarea>
         <label for="expected">What should happen</label>
         <textarea id="expected" placeholder="Expected result"></textarea>
-        <label for="steps">Steps to reproduce</label>
+        <label for="steps">Steps to reproduce (preferred)</label>
         <textarea id="steps" placeholder="1. …"></textarea>
-        <label for="share">Share link (optional)</label>
+        <label for="share">Conversation share link</label>
         <input id="share" placeholder="https://grok.com/share/…" />
+        <label for="screenshot">Screenshot</label>
+        <input id="screenshot" placeholder='e.g. "yes" or "attached"' />
+        <label for="invoice">Invoice / receipt number (billing)</label>
+        <input id="invoice" placeholder="Required for billing issues" />
+        <label for="workaround">Workaround</label>
+        <textarea id="workaround" placeholder="Any temporary fix"></textarea>
+        <label>Reported from the chat where the bug occurred?</label>
+        <div class="chips" id="inchat"></div>
       </section>
     </div>
     <aside>
       <div class="n">Live report</div>
-      <h2>Paste-ready package</h2>
+      <h2 id="status">INCOMPLETE</h2>
       <div class="missing" id="missing"></div>
+      <p class="missing" id="submit-hint" style="color:var(--muted)"></p>
       <div class="actions">
         <button class="btn primary" id="copy" type="button">Copy</button>
-        <button class="btn" id="mail" type="button">Email</button>
+        <button class="btn" id="mail" type="button">Email API</button>
         <button class="btn" id="dl" type="button">Download .txt</button>
       </div>
       <pre id="out"></pre>
@@ -170,16 +182,22 @@
   </main>
   <script>
     const PRODUCTS = [
-      ["grok-chat","Grok Chat"],["imagine","Imagine"],["grok-x","Grok on X"],["api","API"],
-      ["ios","iOS app"],["android","Android app"],["voice","Voice"],["tesla","Tesla"],
-      ["billing","Billing"],["safety","Safety"],["other","Other"]
+      ["grok-chat","Grok Chat","other"],["imagine","Imagine","imagine"],["grok-x","Grok on X","other"],
+      ["api","API","other"],["ios","iOS app","other"],["android","Android app","other"],
+      ["voice","Voice","other"],["tesla","Tesla","other"],["billing","Billing","billing"],
+      ["safety","Safety","other"],["other","Other","other"]
     ];
-    const SEVERITIES = [["blocker","Blocker"],["high","High"],["medium","Medium"],["low","Low"]];
+    const SEVERITIES = [["critical","Critical"],["high","High"],["medium","Medium"],["low","Low"]];
     const FREQS = [["always","Always"],["often","Often"],["once","Once"],["unknown","Unknown"]];
     const PLATS = [["web","Web"],["ios","iOS"],["android","Android"],["api","API"],["tesla","Tesla"],["other","Other"]];
     const TIERS = [["free","Free"],["super-grok","SuperGrok"],["super-grok-pro","SuperGrok Pro"],["x-premium","X Premium"],["x-premium-plus","Premium+"],["api","API / Enterprise"],["unknown","Not sure"]];
-    const INBOX = { safety: "safety@x.ai" };
-    const state = { product: "", severity: "", frequency: "", platform: "", subscription: "" };
+    const CATS = [
+      ["crash","Crash / freeze"],["performance","Performance / latency"],["ui","UI / rendering"],
+      ["billing","Authentication / subscription / billing"],["imagine","Image or video generation"],
+      ["quota","Quota / rate-limit"],["other","Other"]
+    ];
+    const INCHAT = [["yes","Yes"],["no","No"]];
+    const state = { product: "", severity: "", frequency: "", platform: "", subscription: "", category: "", inchat: "" };
 
     function uaParse() {
       const ua = navigator.userAgent || "";
@@ -209,86 +227,121 @@
       ["Viewport", sys.viewport],["Language", sys.language],["Timezone", sys.timezone]
     ].map(([k,v]) => `<div><b>${k}</b> ${v}</div>`).join("");
 
-    function chips(el, items, key) {
+    function chips(el, items, key, onPick) {
       el.innerHTML = items.map(([id,label]) => `<button type="button" class="chip" data-id="${id}">${label}</button>`).join("");
       el.addEventListener("click", (e) => {
         const b = e.target.closest(".chip"); if (!b) return;
         state[key] = b.dataset.id;
         [...el.children].forEach(c => c.classList.toggle("on", c.dataset.id === state[key]));
+        if (onPick) onPick(b.dataset.id);
         render();
       });
     }
-    chips(document.getElementById("products"), PRODUCTS, "product");
+    function syncChips(el, id) {
+      [...el.children].forEach(c => c.classList.toggle("on", c.dataset.id === id));
+    }
+    chips(document.getElementById("products"), PRODUCTS, "product", (id) => {
+      const row = PRODUCTS.find(x => x[0] === id);
+      if (row) {
+        state.category = row[2];
+        syncChips(document.getElementById("categories"), state.category);
+      }
+    });
     chips(document.getElementById("severities"), SEVERITIES, "severity");
     chips(document.getElementById("frequencies"), FREQS, "frequency");
     chips(document.getElementById("platforms"), PLATS, "platform");
     chips(document.getElementById("tiers"), TIERS, "subscription");
+    chips(document.getElementById("categories"), CATS, "category");
+    chips(document.getElementById("inchat"), INCHAT, "inchat");
 
     const $ = (id) => document.getElementById(id);
-    ["email","title","actual","expected","steps","share"].forEach(id => $(id).addEventListener("input", render));
+    ["email","title","actual","expected","steps","share","screenshot","invoice","workaround"].forEach(id => $(id).addEventListener("input", render));
 
     function lab(list, id) { return (list.find(x => x[0] === id) || [,"—"])[1]; }
     function val(id) { return $(id).value.trim(); }
     function emailOk(v) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v); }
+    function hasShareId(url) {
+      try {
+        const u = new URL(url);
+        const host = u.hostname.replace(/^www\./, "").toLowerCase();
+        const ok = ["grok.com","grok.x.ai","grok.x.com","x.com","twitter.com"].includes(host);
+        if (!ok) return false;
+        const m = u.pathname.match(/\/(?:i\/grok\/)?share\/([A-Za-z0-9_-]+)$/);
+        return Boolean(m && m[1]);
+      } catch { return false; }
+    }
+    function hasEvidence() { return val("screenshot").length > 0 || hasShareId(val("share")); }
+    function submitPath() {
+      if (state.product === "billing") return "billing";
+      if (state.product === "api") return "api";
+      return "report";
+    }
 
     function format() {
-      const date = new Date().toISOString().slice(0,10);
-      const product = lab(PRODUCTS, state.product);
-      const inbox = INBOX[state.product] || "support@x.ai";
+      const desc = [val("title"), val("actual") && `Actual: ${val("actual")}`, val("expected") && `Expected: ${val("expected")}`, lab(PRODUCTS, state.product) !== "—" && `Product: ${lab(PRODUCTS, state.product)}`].filter(Boolean).join("\n") || "—";
+      const impact = [val("actual"), val("expected") && `Expected: ${val("expected")}`, state.frequency && `Frequency: ${lab(FREQS, state.frequency)}`].filter(Boolean).join(" ") || "—";
+      const ready = missingFields().length === 0;
       return [
-        "INCIDENT REPORT","===============",`Filed via xAI Bug Reporter · ${date}`,"",
-        "Reporter","--------",
-        `Email:       ${val("email") || "—"}`,`Plan:        ${lab(TIERS, state.subscription)}`,"",
-        "Incident","--------",
-        `Product:     ${product}`,`Severity:    ${lab(SEVERITIES, state.severity)}`,
-        `Platform:    ${lab(PLATS, state.platform)}`,`Frequency:   ${lab(FREQS, state.frequency)}`,
-        `Inbox:       ${inbox}`,"",
-        "Summary","-------", val("title") || "—","",
-        "Steps to reproduce","------------------", val("steps") || "—","",
-        "Expected","--------", val("expected") || "—","",
-        "Actual","------", val("actual") || "—","",
-        "Evidence","--------", `Share link:  ${val("share") || "—"}`,"",
-        "System","------",
-        `Browser:     ${sys.browser}`,`OS:          ${sys.os}`,
-        `Screen:      ${sys.screen}`,`Viewport:    ${sys.viewport}`,
-        `Language:    ${sys.language}`,`Timezone:    ${sys.timezone}`,
-        `User-Agent:  ${sys.userAgent}`,"",
         "-----BEGIN REPORT-----",
+        `Status: ${ready ? "READY" : "INCOMPLETE"}`,"",
         "=== TRIAGE ===",
         `Severity: ${lab(SEVERITIES, state.severity)}`,
-        `Category: ${product}`,
-        `Impact: ${val("actual") || "—"}`,"",
+        `Category: ${lab(CATS, state.category)}`,
+        `Impact: ${impact}`,"",
         "=== REQUIRED ===",
         `Account email: ${val("email") || "—"}`,
         `Subscription tier: ${lab(TIERS, state.subscription)}`,
         `Platform: ${lab(PLATS, state.platform)}`,
         `System & app info: ${sys.os}; ${sys.browser}; ${sys.screen}`,
-        `Bug description: ${val("actual") || "—"}`,
-        `Steps to reproduce: ${val("steps") || "—"}`,"",
+        `Bug description: ${desc}`,"",
         "Evidence:",
         `  Conversation share link: ${val("share") || "—"}`,
-        "  Screenshot: —","","=== NOTES ===",
+        `  Screenshot: ${val("screenshot") || "—"}`,"",
+        "=== PREFERRED ===",
+        `Steps to reproduce: ${val("steps") || "—"}`,"",
+        "=== BILLING (if applicable) ===",
+        `Invoice / receipt number: ${val("invoice") || "—"}`,"",
+        "=== NOTES ===",
+        `Workaround: ${val("workaround") || "—"}`,
         `Frequency: ${lab(FREQS, state.frequency)}`,
-        "Reported from inside the chat where the bug occurred: —",
+        `Reported from inside the chat where the bug occurred: ${lab(INCHAT, state.inchat)}`,
         "-----END REPORT-----"
       ].join("\n");
     }
 
-    function render() {
+    function missingFields() {
       const missing = [];
       if (!state.product) missing.push("Product");
       if (!state.severity) missing.push("Severity");
       if (!state.platform) missing.push("Platform");
-      if (!emailOk(val("email"))) missing.push("Email");
-      if (!state.subscription) missing.push("Plan");
-      if (val("title").length < 8) missing.push("Summary");
-      if (val("steps").length < 16) missing.push("Steps");
-      if (val("actual").length < 8) missing.push("What happened");
-      const pct = Math.round(((8 - missing.length) / 8) * 100);
+      if (!emailOk(val("email"))) missing.push("Account email");
+      if (!state.subscription) missing.push("Subscription tier");
+      if (val("title").length < 8 && val("actual").length < 8) missing.push("Bug description");
+      if (!hasEvidence()) missing.push("Evidence");
+      if (state.product === "billing" && !val("invoice")) missing.push("Invoice / receipt number");
+      return missing;
+    }
+
+    function render() {
+      const missing = missingFields();
+      const preferred = val("steps").length < 8;
+      const tracked = 8 + (state.product === "billing" ? 1 : 0);
+      const filled = tracked - missing.length - (preferred ? 1 : 0);
+      const pct = Math.max(0, Math.round((filled / (tracked + 1)) * 100));
       const pill = $("score");
       pill.textContent = `${pct}%`;
-      pill.classList.toggle("ready", pct === 100);
-      $("missing").textContent = missing.length ? "Still need: " + missing.join(", ") : "Ready to copy.";
+      pill.classList.toggle("ready", missing.length === 0);
+      $("status").textContent = missing.length ? "INCOMPLETE" : "READY";
+      $("missing").textContent = missing.length
+        ? "Still missing required fields: " + missing.join(", ")
+        : (preferred ? "Ready. Preferred still empty: Steps to reproduce." : "Ready to submit via the official path.");
+      const path = submitPath();
+      $("submit-hint").innerHTML = path === "api"
+        ? "API bugs: email support@x.ai with subject “API Bug Report”. Not a Grok-app inbox. Hangouts (not a ticket): <a href=\"https://discord.gg/kqCc86jM55\">Grok Community</a> · <a href=\"https://discord.gg/x-ai\">xAI API Discord</a>."
+        : path === "billing"
+        ? "Billing: reply to your receipt email. Refunds: <a href=\"https://accounts.x.ai/refund\">accounts.x.ai/refund</a>. Hangouts (not a ticket): <a href=\"https://discord.gg/kqCc86jM55\">Grok Community</a> · <a href=\"https://discord.gg/x-ai\">xAI API Discord</a>."
+        : "Paste into Grok → ⋮ Report an issue. Do not email support@x.ai. Hangouts (not a ticket): <a href=\"https://discord.gg/kqCc86jM55\">Grok Community</a> · <a href=\"https://discord.gg/x-ai\">xAI API Discord</a>.";
+      $("mail").disabled = path !== "api";
       $("out").textContent = format();
     }
 
@@ -298,9 +351,9 @@
       setTimeout(() => $("copy").textContent = "Copy", 1200);
     };
     $("mail").onclick = () => {
-      const inbox = INBOX[state.product] || "support@x.ai";
-      const sub = encodeURIComponent("[xAI Bug Reporter] " + (val("title") || "Incident"));
-      location.href = `mailto:${inbox}?subject=${sub}&body=${encodeURIComponent(format())}`;
+      if (submitPath() !== "api") return;
+      const sub = encodeURIComponent("API Bug Report: " + (val("title") || "Incident"));
+      location.href = `mailto:support@x.ai?subject=${sub}&body=${encodeURIComponent(format())}`;
     };
     $("dl").onclick = () => {
       const blob = new Blob([format()], { type: "text/plain" });

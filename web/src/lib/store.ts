@@ -15,6 +15,7 @@ type DeskState = {
   drafts: SavedDraft[];
   hydrated: boolean;
   setField: <K extends keyof ReportDraft>(key: K, value: ReportDraft[K]) => void;
+  patchDraft: (partial: Partial<ReportDraft>) => void;
   reset: () => void;
   saveDraft: () => SavedDraft | null;
   loadDraft: (id: string) => void;
@@ -57,6 +58,8 @@ export const useDeskStore = create<DeskState>((set, get) => ({
   hydrated: false,
   setField: (key, value) =>
     set((state) => ({ draft: { ...state.draft, [key]: value } })),
+  patchDraft: (partial) =>
+    set((state) => ({ draft: { ...state.draft, ...partial } })),
   reset: () =>
     set((state) => ({
       draft: {

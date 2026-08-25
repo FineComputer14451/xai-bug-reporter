@@ -276,6 +276,36 @@ else
   echo "OK   agent supporting files do not tell Chat to run bash"
 fi
 
+ran=$((ran + 1))
+desk="$ROOT/docs/index.html"
+if grep -q 'INBOX' "$desk"; then
+  fail=$((fail + 1))
+  echo "FAIL companion desk still maps products to invented inboxes"
+elif grep -q 'blocker' "$desk"; then
+  fail=$((fail + 1))
+  echo "FAIL companion desk still uses Blocker instead of Critical"
+elif ! grep -q 'Status: ${ready ? "READY"' "$desk"; then
+  fail=$((fail + 1))
+  echo "FAIL companion desk paste block missing Status READY/INCOMPLETE"
+elif ! grep -q 'discord.gg/kqCc86jM55' "$desk" || ! grep -q 'discord.gg/x-ai' "$desk"; then
+  fail=$((fail + 1))
+  echo "FAIL companion desk missing Discord hangout links"
+else
+  echo "OK   companion desk matches Chat skill channels and template"
+fi
+
+ran=$((ran + 1))
+if grep -q 'inbox: "support@x.ai"' "$ROOT/web/src/lib/report.ts" \
+  || grep -q 'safety@x.ai' "$ROOT/web/src/lib/report.ts"; then
+  fail=$((fail + 1))
+  echo "FAIL web report.ts still invents xAI inboxes for Grok products"
+elif ! grep -q 'api-email' "$ROOT/web/src/lib/report.ts"; then
+  fail=$((fail + 1))
+  echo "FAIL web report.ts missing API-only email path"
+else
+  echo "OK   web companion only emails support@x.ai for API bugs"
+fi
+
 # GitHub "Download ZIP" is git archive with a repo-branch prefix.
 # grok.com / skill hosts reject any symlink member in that zip.
 ran=$((ran + 1))

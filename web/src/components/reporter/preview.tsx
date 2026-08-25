@@ -1,10 +1,12 @@
 import { Copy, Download, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
+  DISCORD_GROK_COMMUNITY,
+  DISCORD_XAI_API,
   formatReport,
   mailtoHref,
-  productById,
   scoreReport,
+  submitPath,
   type ReportDraft,
 } from "@/lib/report";
 import { cn } from "@/lib/utils";
@@ -17,8 +19,9 @@ type PreviewProps = {
 
 export function ReportPreview({ draft, onCopy, onDownload }: PreviewProps) {
   const { percent, missing, missingPreferred, ready } = scoreReport(draft);
-  const product = productById(draft.product);
+  const path = submitPath(draft);
   const text = formatReport(draft);
+  const mail = mailtoHref(draft);
 
   return (
     <aside className="flex flex-col gap-4 rounded-2xl border border-border bg-surface p-4 sm:p-5">
@@ -35,33 +38,92 @@ export function ReportPreview({ draft, onCopy, onDownload }: PreviewProps) {
       </div>
 
       {missing.length > 0 ? (
-        <p className="text-sm text-muted">
-          Still missing required:{" "}
-          {missing.join(", ").replace(/, ([^,]*)$/, " and $1")}.
-        </p>
+        <div className="text-sm text-muted">
+          <p>Still missing required fields:</p>
+          <ul className="mt-1 list-disc pl-5">
+            {missing.map((item) => (
+              <li key={item}>{item}</li>
+            ))}
+          </ul>
+        </div>
       ) : missingPreferred && missingPreferred.length > 0 ? (
         <p className="text-sm text-muted">
           Ready. Preferred still empty:{" "}
           {missingPreferred.join(", ").replace(/, ([^,]*)$/, " and $1")}.
         </p>
       ) : (
-        <p className="text-sm text-muted">
-          Ready to paste into Grok → Report an issue
-          {product ? ` (or ${product.inbox})` : ""}.
-        </p>
+        <p className="text-sm text-muted">Ready to submit via the official path below.</p>
       )}
+
+      <div className="rounded-lg border border-border bg-bg p-3 text-sm text-muted">
+        {path === "api-email" ? (
+          <p>
+            API bugs: email{" "}
+            <span className="text-fg">support@x.ai</span> with subject “API Bug
+            Report”. Do not use that address for the Grok app.
+          </p>
+        ) : path === "billing-receipt" ? (
+          <p>
+            Billing: reply to your receipt email with this package and the invoice
+            number. Refunds:{" "}
+            <a
+              className="underline decoration-border underline-offset-4 hover:text-fg"
+              href="https://accounts.x.ai/refund"
+              target="_blank"
+              rel="noreferrer"
+            >
+              accounts.x.ai/refund
+            </a>
+            .
+          </p>
+        ) : (
+          <ol className="list-decimal space-y-1 pl-5">
+            <li>Stay in the Grok chat where it happened.</li>
+            <li>Tap ⋮ → Report an issue / Report Issue.</li>
+            <li>Paste this block. Attach a screenshot if you have one.</li>
+            <li>Submit. This desk does not file a ticket.</li>
+          </ol>
+        )}
+        <p className="mt-2 text-xs text-subtle">
+          Hangouts (not a ticket):{" "}
+          <a
+            className="underline decoration-border underline-offset-4 hover:text-fg"
+            href={DISCORD_GROK_COMMUNITY}
+            target="_blank"
+            rel="noreferrer"
+          >
+            Grok Community
+          </a>
+          {" · "}
+          <a
+            className="underline decoration-border underline-offset-4 hover:text-fg"
+            href={DISCORD_XAI_API}
+            target="_blank"
+            rel="noreferrer"
+          >
+            xAI API Discord
+          </a>
+        </p>
+      </div>
 
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
         <Button type="button" onClick={onCopy} className="col-span-2 sm:col-span-1">
           <Copy className="size-4" aria-hidden />
           Copy
         </Button>
-        <Button type="button" variant="outline" asChild>
-          <a href={mailtoHref(draft)}>
+        {mail ? (
+          <Button type="button" variant="outline" asChild>
+            <a href={mail}>
+              <Mail className="size-4" aria-hidden />
+              Email API
+            </a>
+          </Button>
+        ) : (
+          <Button type="button" variant="outline" disabled title="Email is only for xAI API bugs">
             <Mail className="size-4" aria-hidden />
             Email
-          </a>
-        </Button>
+          </Button>
+        )}
         <Button type="button" variant="subtle" onClick={onDownload}>
           <Download className="size-4" aria-hidden />
           .txt
@@ -98,8 +160,8 @@ function CompletenessRing({ value }: { value: number }) {
           className="stroke-accent"
           strokeWidth="3"
           strokeDasharray={circ}
-          strokeDashoffset={offset}
           strokeLinecap="round"
+          strokeDashoffset={offset}
         />
       </svg>
       <span className="font-mono text-sm tabular-nums text-muted">{value}%</span>

@@ -22,6 +22,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import {
+  CATEGORIES,
+  DISCORD_GROK_COMMUNITY,
+  DISCORD_XAI_API,
   FREQUENCIES,
   PLATFORMS,
   PRODUCTS,
@@ -31,6 +34,7 @@ import {
   isDraftBlank,
   productById,
   scoreReport,
+  type CategoryId,
   type FrequencyId,
   type PlatformId,
   type ProductId,
@@ -59,6 +63,7 @@ export function Desk() {
   const drafts = useDeskStore((s) => s.drafts);
   const hydrated = useDeskStore((s) => s.hydrated);
   const setField = useDeskStore((s) => s.setField);
+  const patchDraft = useDeskStore((s) => s.patchDraft);
   const reset = useDeskStore((s) => s.reset);
   const saveDraft = useDeskStore((s) => s.saveDraft);
   const loadDraft = useDeskStore((s) => s.loadDraft);
@@ -152,30 +157,6 @@ export function Desk() {
             >
               Add to Grok Chat
             </a>
-            <a
-              href="https://github.com/FineComputer14451/xai-bug-reporter/raw/main/SKILL.md"
-              target="_blank"
-              rel="noreferrer"
-              className="hidden min-h-11 items-center rounded-md border border-border bg-raised px-3 text-sm text-fg sm:inline-flex"
-            >
-              SKILL.md
-            </a>
-            <a
-              href="https://discord.gg/kqCc86jM55"
-              target="_blank"
-              rel="noreferrer"
-              className="hidden min-h-11 items-center rounded-md border border-border bg-raised px-3 text-sm text-fg lg:inline-flex"
-            >
-              Grok Community
-            </a>
-            <a
-              href="https://discord.gg/x-ai"
-              target="_blank"
-              rel="noreferrer"
-              className="hidden min-h-11 items-center rounded-md border border-border bg-raised px-3 text-sm text-fg lg:inline-flex"
-            >
-              xAI API Discord
-            </a>
             <CompletenessPill value={percent} />
             <a
               href="https://github.com/FineComputer14451/xai-bug-reporter"
@@ -199,6 +180,39 @@ export function Desk() {
           </div>
         </div>
       </header>
+
+      <div className="border-b border-border bg-surface">
+        <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-2 px-4 py-3 sm:px-6">
+          <p className="min-w-[12rem] flex-1 text-sm text-muted">
+            Fallback desk. Prefer Grok Chat → ⋮ Report an issue. Discord is not a
+            ticket.
+          </p>
+          <a
+            href="https://github.com/FineComputer14451/xai-bug-reporter/raw/main/SKILL.md"
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex min-h-11 items-center rounded-md border border-border bg-raised px-3 text-sm text-fg"
+          >
+            SKILL.md
+          </a>
+          <a
+            href={DISCORD_GROK_COMMUNITY}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex min-h-11 items-center rounded-md border border-border bg-raised px-3 text-sm text-fg"
+          >
+            Grok Community
+          </a>
+          <a
+            href={DISCORD_XAI_API}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex min-h-11 items-center rounded-md border border-border bg-raised px-3 text-sm text-fg"
+          >
+            xAI API Discord
+          </a>
+        </div>
+      </div>
 
       <div className="mx-auto max-w-6xl px-4 pt-4 sm:px-6 lg:hidden">
         <div className="grid grid-cols-2 rounded-xl border border-border bg-surface p-1">
@@ -228,7 +242,12 @@ export function Desk() {
                     key={item.id}
                     type="button"
                     aria-pressed={selected}
-                    onClick={() => setField("product", item.id)}
+                    onClick={() =>
+                      patchDraft({
+                        product: item.id,
+                        category: item.categoryId,
+                      })
+                    }
                     className={cn(
                       "flex min-h-11 flex-col items-start gap-2 rounded-md border px-3 py-3 text-left",
                       "transition-[background-color,border-color,color,transform] duration-[var(--motion-quick)] ease-[var(--ease-out)]",
@@ -285,6 +304,20 @@ export function Desk() {
                 >
                   {item.label}
                   <span className="hidden sm:inline"> · {item.hint}</span>
+                </Chip>
+              ))}
+            </ChipGroup>
+            <p className="mt-4 mb-2 text-xs font-medium tracking-wide text-subtle">
+              Category
+            </p>
+            <ChipGroup>
+              {CATEGORIES.map((item) => (
+                <Chip
+                  key={item.id}
+                  selected={draft.category === item.id}
+                  onClick={() => setField("category", item.id as CategoryId)}
+                >
+                  {item.label}
                 </Chip>
               ))}
             </ChipGroup>
@@ -418,12 +451,25 @@ export function Desk() {
           </Section>
 
           <Section n="06" title="Extras">
-            <Field label="Share link or request id" htmlFor="share">
+            <Field label="Conversation share link" htmlFor="share">
               <Input
                 id="share"
                 value={draft.shareLink}
-                placeholder="Conversation link, request id, invoice number"
+                placeholder="https://grok.com/share/…"
                 onChange={(e) => setField("shareLink", e.target.value)}
+              />
+            </Field>
+            <p className="mb-4 text-xs text-subtle">
+              Evidence needs a share link with a nonempty id, or a screenshot note
+              below.
+            </p>
+
+            <Field label="Invoice / receipt number (billing)" htmlFor="invoice">
+              <Input
+                id="invoice"
+                value={draft.invoice}
+                placeholder="Required for billing issues"
+                onChange={(e) => setField("invoice", e.target.value)}
               />
             </Field>
 

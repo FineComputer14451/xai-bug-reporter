@@ -1,91 +1,96 @@
+export const DISCORD_GROK_COMMUNITY = "https://discord.gg/kqCc86jM55";
+export const DISCORD_XAI_API = "https://discord.gg/x-ai";
+
+export type SubmitPath = "report-an-issue" | "billing-receipt" | "api-email";
+
 export const PRODUCTS = [
   {
     id: "grok-chat",
     label: "Grok Chat",
     hint: "Answers, tools, web UI",
-    inbox: "support@x.ai",
+    submit: "report-an-issue" as const,
     tip: "Include the conversation share link, the model if you know it, and whether a new chat fixes it.",
-    category: "Other",
+    categoryId: "other",
   },
   {
     id: "imagine",
     label: "Imagine",
     hint: "Images and video",
-    inbox: "support@x.ai",
+    submit: "report-an-issue" as const,
     tip: "Paste the prompt, aspect ratio, image vs video, and whether the job failed, stalled, or looked wrong.",
-    category: "Image or video generation",
+    categoryId: "imagine",
   },
   {
     id: "grok-x",
     label: "Grok on X",
     hint: "Grok inside X",
-    inbox: "support@x.ai",
+    submit: "report-an-issue" as const,
     tip: "Note the X client (web, iOS, Android) and whether it happens on grok.com too.",
-    category: "Other",
+    categoryId: "other",
   },
   {
     id: "api",
     label: "API",
     hint: "Models, keys, calling",
-    inbox: "support@x.ai",
-    tip: "Include model name, HTTP status, request id, and a redacted request/response. Do not paste API keys.",
-    category: "Other",
+    submit: "api-email" as const,
+    tip: "Include model name, HTTP status, request id, and a redacted request/response. Do not paste API keys. Email support@x.ai with subject API Bug Report.",
+    categoryId: "other",
   },
   {
     id: "ios",
     label: "iOS app",
     hint: "iPhone and iPad",
-    inbox: "support@x.ai",
+    submit: "report-an-issue" as const,
     tip: "Include iOS version, app version, and device. Screenshots help more than a long write-up.",
-    category: "Other",
+    categoryId: "other",
   },
   {
     id: "android",
     label: "Android app",
     hint: "Phone and tablet",
-    inbox: "support@x.ai",
+    submit: "report-an-issue" as const,
     tip: "Include Android version, app version, and device. Note if it is the Play Store build.",
-    category: "Other",
+    categoryId: "other",
   },
   {
     id: "voice",
     label: "Voice",
     hint: "Talk mode and TTS",
-    inbox: "support@x.ai",
+    submit: "report-an-issue" as const,
     tip: "Note input vs output, headset vs speaker, and whether text chat still works.",
-    category: "Other",
+    categoryId: "other",
   },
   {
     id: "tesla",
     label: "Tesla",
     hint: "In-car Grok",
-    inbox: "support@x.ai",
+    submit: "report-an-issue" as const,
     tip: "Include vehicle software version, whether you used voice or the screen, and what the car did.",
-    category: "Other",
+    categoryId: "other",
   },
   {
     id: "billing",
     label: "Billing",
     hint: "Plans and receipts",
-    inbox: "support@x.ai",
-    tip: "Include the invoice or receipt number and the account email. Do not paste full card numbers.",
-    category: "Authentication / subscription / billing",
+    submit: "billing-receipt" as const,
+    tip: "Include the invoice or receipt number and the account email. Reply to the receipt email. Do not paste full card numbers.",
+    categoryId: "billing",
   },
   {
     id: "safety",
     label: "Safety",
     hint: "Harm or jailbreaks",
-    inbox: "safety@x.ai",
-    tip: "This routes to safety@x.ai. Describe the output and context. Do not repeat harmful content in full.",
-    category: "Other",
+    submit: "report-an-issue" as const,
+    tip: "Paste into Grok → Report an issue. Describe the output and context. Do not repeat harmful content in full.",
+    categoryId: "other",
   },
   {
     id: "other",
     label: "Other",
     hint: "Something else",
-    inbox: "support@x.ai",
+    submit: "report-an-issue" as const,
     tip: "Name the product in the summary so the team can route it.",
-    category: "Other",
+    categoryId: "other",
   },
 ] as const;
 
@@ -132,6 +137,18 @@ export const TIERS = [
 
 export type TierId = (typeof TIERS)[number]["id"];
 
+export const CATEGORIES = [
+  { id: "crash", label: "Crash / freeze" },
+  { id: "performance", label: "Performance / latency" },
+  { id: "ui", label: "UI / rendering" },
+  { id: "billing", label: "Authentication / subscription / billing" },
+  { id: "imagine", label: "Image or video generation" },
+  { id: "quota", label: "Quota / rate-limit" },
+  { id: "other", label: "Other" },
+] as const;
+
+export type CategoryId = (typeof CATEGORIES)[number]["id"];
+
 export type SystemInfo = {
   browser: string;
   os: string;
@@ -156,6 +173,8 @@ export type ReportDraft = {
   shareLink: string;
   extra: string;
   contactEmail: string;
+  invoice: string;
+  category: CategoryId | null;
   /** Free-text workaround description */
   workaround: string;
   /** Free-text: "yes", "attached", short description, etc. */
@@ -193,6 +212,8 @@ export const emptyDraft = (): ReportDraft => ({
   shareLink: "",
   extra: "",
   contactEmail: "",
+  invoice: "",
+  category: null,
   workaround: "",
   screenshot: "",
   reportedFromChat: null,
@@ -269,14 +290,37 @@ export function systemFilled(info: SystemInfo) {
   return Boolean(info.browser || info.os || info.userAgent);
 }
 
+export function submitPath(draft: ReportDraft): SubmitPath {
+  return productById(draft.product)?.submit ?? "report-an-issue";
+}
+
+export function hasShareId(url: string) {
+  try {
+    const parsed = new URL(url.trim());
+    const host = parsed.hostname.replace(/^www\./, "").toLowerCase();
+    const okHost = ["grok.com", "grok.x.ai", "grok.x.com", "x.com", "twitter.com"].includes(
+      host,
+    );
+    if (!okHost) return false;
+    const match = parsed.pathname.match(/\/(?:i\/grok\/)?share\/([A-Za-z0-9_-]+)$/);
+    return Boolean(match?.[1]);
+  } catch {
+    return false;
+  }
+}
+
+export function hasEvidence(draft: ReportDraft) {
+  return draft.screenshot.trim().length > 0 || hasShareId(draft.shareLink);
+}
+
 /** Required fields that block Status: READY */
 const REQUIRED: { key: keyof ReportDraft; label: string; min: number }[] = [
   { key: "product", label: "Product", min: 1 },
   { key: "severity", label: "Severity", min: 1 },
   { key: "platform", label: "Platform", min: 1 },
-  { key: "contactEmail", label: "Email", min: 5 },
-  { key: "subscription", label: "Plan", min: 1 },
-  { key: "title", label: "Summary", min: 8 },
+  { key: "contactEmail", label: "Account email", min: 5 },
+  { key: "subscription", label: "Subscription tier", min: 1 },
+  { key: "title", label: "Bug description", min: 8 },
   { key: "actual", label: "What happened", min: 8 },
 ];
 
@@ -296,6 +340,12 @@ export function scoreReport(draft: ReportDraft) {
     if (item.key === "contactEmail") return !isValidEmail(draft.contactEmail);
     return !fieldFilled(draft, item.key, item.min);
   }).map((item) => item.label);
+
+  if (!systemFilled(draft)) missingRequired.push("System & app info");
+  if (!hasEvidence(draft)) missingRequired.push("Evidence");
+  if (submitPath(draft) === "billing-receipt" && !draft.invoice.trim()) {
+    missingRequired.push("Invoice / receipt number");
+  }
 
   const missingPreferred = PREFERRED.filter(
     (item) => !fieldFilled(draft, item.key, item.min),
@@ -328,6 +378,8 @@ export function isDraftBlank(draft: ReportDraft) {
     !draft.extra.trim() &&
     !draft.workaround.trim() &&
     !draft.screenshot.trim() &&
+    !draft.invoice.trim() &&
+    draft.category == null &&
     draft.reportedFromChat == null
   );
 }
@@ -380,7 +432,10 @@ export function formatReport(draft: ReportDraft, _filedAt = new Date()) {
   const status = ready ? "READY" : "INCOMPLETE";
 
   const severity = labelOf(SEVERITIES, draft.severity);
-  const category = product?.category ?? "Other";
+  const category = labelOf(
+    CATEGORIES,
+    draft.category ?? product?.categoryId ?? "other",
+  );
   const impact = buildImpact(draft);
   const platform = labelOf(PLATFORMS, draft.platform);
   const tier = labelOf(TIERS, draft.subscription);
@@ -422,7 +477,7 @@ export function formatReport(draft: ReportDraft, _filedAt = new Date()) {
     `Steps to reproduce: ${steps}`,
     "",
     "=== BILLING (if applicable) ===",
-    "Invoice / receipt number: —",
+    `Invoice / receipt number: ${draft.invoice.trim() || "—"}`,
     "",
     "=== NOTES ===",
     `Workaround: ${workaround}`,
@@ -442,8 +497,8 @@ export function mailSubject(draft: ReportDraft) {
 }
 
 export function mailtoHref(draft: ReportDraft) {
-  const to = productById(draft.product)?.inbox ?? "support@x.ai";
-  const subject = encodeURIComponent(mailSubject(draft));
+  if (submitPath(draft) !== "api-email") return "";
+  const subject = encodeURIComponent(`API Bug Report: ${mailSubject(draft)}`);
   const body = encodeURIComponent(formatReport(draft));
-  return `mailto:${to}?subject=${subject}&body=${body}`;
+  return `mailto:support@x.ai?subject=${subject}&body=${body}`;
 }
