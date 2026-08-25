@@ -296,7 +296,7 @@ export function Desk() {
                 onChange={(e) => setField("title", e.target.value)}
               />
             </Field>
-            <Field label="Steps to reproduce" htmlFor="steps">
+            <Field label="Steps to reproduce (preferred)" htmlFor="steps">
               <Textarea
                 id="steps"
                 value={draft.steps}
@@ -563,7 +563,7 @@ function Chip({
         "transition-[background-color,border-color,color,transform] duration-[var(--motion-quick)] ease-[var(--ease-out)]",
         "active:scale-[0.96] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/70",
         selected
-          ? tone === "blocker"
+          ? tone === "critical"
             ? "border-danger bg-danger text-fg"
             : "border-accent bg-accent text-accent-fg"
           : "border-border bg-raised text-fg hover:border-fg/30",
