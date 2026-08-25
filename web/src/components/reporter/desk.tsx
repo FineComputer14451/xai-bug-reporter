@@ -124,7 +124,7 @@ export function Desk() {
   return (
     <div className="min-h-dvh bg-bg text-fg">
       <header className="border-b border-border">
-        <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-4 sm:px-6">
+        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-4 sm:px-6">
           <div className="flex min-w-0 items-center gap-3">
             <span
               className="flex size-9 items-center justify-center rounded-md bg-raised"
@@ -144,6 +144,22 @@ export function Desk() {
             </div>
           </div>
           <div className="flex items-center gap-2">
+            <a
+              href="https://grok.com/skills"
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex min-h-11 items-center rounded-md border border-border bg-fg px-3 text-xs text-bg sm:text-sm"
+            >
+              Add to Grok Chat
+            </a>
+            <a
+              href="https://github.com/FineComputer14451/xai-bug-reporter/raw/main/SKILL.md"
+              target="_blank"
+              rel="noreferrer"
+              className="hidden min-h-11 items-center rounded-md border border-border bg-raised px-3 text-sm text-fg sm:inline-flex"
+            >
+              SKILL.md
+            </a>
             <CompletenessPill value={percent} />
             <a
               href="https://github.com/FineComputer14451/xai-bug-reporter"

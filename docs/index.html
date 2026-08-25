@@ -79,6 +79,12 @@
     .sys b { color: var(--subtle); font-weight: 500; min-width: 5.5rem; display: inline-block; }
     .gh { width: 44px; height: 44px; display: grid; place-items: center; color: var(--subtle); border-radius: 8px; }
     .gh:hover { background: var(--raised); color: var(--fg); }
+    .chatbar {
+      display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem;
+      padding: 0.75rem 1.25rem; border-bottom: 1px solid var(--line);
+      background: var(--surface);
+    }
+    .chatbar p { margin: 0; color: var(--muted); font-size: 0.8rem; line-height: 1.4; flex: 1 1 12rem; }
     .missing { color: #d4a27f; font-size: 0.75rem; margin-top: 0.5rem; }
     @media (max-width: 860px) {
       main { grid-template-columns: 1fr; }
@@ -102,6 +108,11 @@
       </a>
     </div>
   </header>
+  <div class="chatbar">
+    <p>Prefer Grok Chat. Upload SKILL.md at grok.com/skills, then say “report a bug” in the chat where it happened. This page is a fallback desk.</p>
+    <a class="btn primary" href="https://grok.com/skills">Add to Grok Chat</a>
+    <a class="btn" href="https://github.com/FineComputer14451/xai-bug-reporter/raw/main/SKILL.md">SKILL.md</a>
+  </div>
   <main>
     <div>
       <section>

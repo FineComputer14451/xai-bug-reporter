@@ -4,14 +4,14 @@
 
 It guides the conversation through formal triage, evidence collection, and a paste-ready report for the in-product **Report an issue** flow — without inventing support channels, running scripts, or claiming to file tickets on xAI servers.
 
-**Web app:** [xAI Bug Reporter](https://finecomputer14451.github.io/xai-bug-reporter) — structured desk for email, subscription tier, system info, and a paste-ready package.
+Install on [grok.com/skills](https://grok.com/skills), then say “report a bug” in the chat where it happened. Companion desk: [xAI Bug Reporter](https://finecomputer14451.github.io/xai-bug-reporter).
 
-[![Web app](https://img.shields.io/badge/web_app-live-0C0C0D?logo=github&logoColor=white)](https://finecomputer14451.github.io/xai-bug-reporter)
-[![GitHub Pages](https://img.shields.io/badge/GitHub_Pages-live-222?logo=githubpages&logoColor=white)](https://finecomputer14451.github.io/xai-bug-reporter/)
+[![Grok Chat](https://img.shields.io/badge/Grok_Chat-skills-0C0C0D?logo=x&logoColor=white)](https://grok.com/skills)
+[![SKILL.md](https://img.shields.io/badge/SKILL.md-raw-222?logo=markdown&logoColor=white)](https://github.com/FineComputer14451/xai-bug-reporter/raw/main/SKILL.md)
+[![Web desk](https://img.shields.io/badge/web_desk-live-0C0C0D?logo=github&logoColor=white)](https://finecomputer14451.github.io/xai-bug-reporter)
 [![Validate skill](https://github.com/FineComputer14451/xai-bug-reporter/actions/workflows/validate.yml/badge.svg?branch=main)](https://github.com/FineComputer14451/xai-bug-reporter/actions/workflows/validate.yml)
 [![Dependabot](https://img.shields.io/badge/Dependabot-enabled-025E8C?logo=dependabot&logoColor=white)](https://github.com/FineComputer14451/xai-bug-reporter/network/updates)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Shell](https://img.shields.io/badge/shell-bash-4EAA25?logo=gnubash&logoColor=white)](#scripts)
 [![Last commit](https://img.shields.io/github/last-commit/FineComputer14451/xai-bug-reporter)](https://github.com/FineComputer14451/xai-bug-reporter/commits/main)
 
 > **Note**  
@@ -19,30 +19,15 @@ It guides the conversation through formal triage, evidence collection, and a pas
 
 ---
 
-## Web app
+## Install in Grok Chat
 
-Live desk: **[xAI Bug Reporter](https://finecomputer14451.github.io/xai-bug-reporter/)**
-
-Companion UI for this skill. It collects reporter email, subscription tier, and browser/OS system information, then copies, emails, or downloads a paste-ready **Report an issue** package.
-
-GitHub Pages publishes [`docs/`](docs/) via [Deploy GitHub Pages](https://github.com/FineComputer14451/xai-bug-reporter/actions/workflows/deploy-pages.yml). The repository homepage is set to that URL.
-
-**First-time enable (required once):** [Settings → Pages](https://github.com/FineComputer14451/xai-bug-reporter/settings/pages) → **Source: GitHub Actions**. Then re-run the **Deploy GitHub Pages** workflow (Actions → workflow_dispatch, or push to `docs/`).
-
-- Public page: [`docs/`](docs/)
-- Grok Build source: [`web/`](web/)
-
----
-
-## Install
-
-**Primary host is Grok Chat** — grok.com, iOS, and Android ([Grok Skills](https://x.ai/news/grok-skills)). Upload `SKILL.md` (or the consumer zip). The agent follows that file only and must not run bash.
+**Primary host** is Grok Chat — grok.com, iOS, and Android ([Grok Skills](https://x.ai/news/grok-skills)). No bash. The agent follows `SKILL.md` and the supporting `references/` + `assets/` files when those are in the upload.
 
 ### grok.com (web)
 
-Official: Skills are on grok.com; create by conversation, upload a file, or Skill Creator. [grok.com/skills](https://grok.com/skills)
+Official: create by conversation, upload a file, or Skill Creator. [grok.com/skills](https://grok.com/skills)
 
-1. Upload this repo’s [`SKILL.md`](https://github.com/FineComputer14451/xai-bug-reporter/blob/main/SKILL.md) (use **Raw** to download), or the zip from `bash scripts/pack-skill.sh` (`dist/xai-bug-reporter.zip`). Skill hosts reject zip members that are symlinks, so do not upload an older GitHub archive of this repo that still contained `.grok/skills` links.
+1. Upload [`SKILL.md`](https://github.com/FineComputer14451/xai-bug-reporter/raw/main/SKILL.md) (**Raw**), **or** the Chat zip (`SKILL.md` + `assets/` + `references/`, no `scripts/`). Each [Validate skill](https://github.com/FineComputer14451/xai-bug-reporter/actions/workflows/validate.yml) run on `main` uploads artifact `xai-bug-reporter-skill`. Skill hosts reject zip members that are symlinks — do not upload an older GitHub archive of this repo that still contained `.grok/skills` links.
 2. Ask Skill Creator to save it as skill `xai-bug-reporter`.
 3. In **any Grok chat**, say “report a bug” / “this is broken” / “use xai-bug-reporter”. Stay in the chat where the bug happened.
 
@@ -59,7 +44,24 @@ Skills are account-scoped. Install once, then use in the Grok app chat.
 
 Do not invent exact Android Settings labels. Bash scripts do not run in Chat; the `SKILL.md` body is enough.
 
-### Grok Build (CLI)
+---
+
+## Companion web desk
+
+Live desk: **[xAI Bug Reporter](https://finecomputer14451.github.io/xai-bug-reporter/)**
+
+Fallback UI if you are not in Grok Chat. It collects reporter email, subscription tier, and browser/OS system information, then copies, emails, or downloads a paste-ready **Report an issue** package.
+
+GitHub Pages publishes [`docs/`](docs/) via [Deploy GitHub Pages](https://github.com/FineComputer14451/xai-bug-reporter/actions/workflows/deploy-pages.yml).
+
+**First-time enable (required once):** [Settings → Pages](https://github.com/FineComputer14451/xai-bug-reporter/settings/pages) → **Source: GitHub Actions**. Then re-run the **Deploy GitHub Pages** workflow (Actions → workflow_dispatch, or push to `docs/`).
+
+- Public page: [`docs/`](docs/)
+- Grok Build source: [`web/`](web/)
+
+---
+
+## Grok Build (CLI)
 
 Grok Build loads a directory that contains `SKILL.md`. The folder name **must** be `xai-bug-reporter` (matches `name` in `SKILL.md`).
 

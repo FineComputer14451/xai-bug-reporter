@@ -266,5 +266,12 @@ jobs:
           fi
           echo "consumer zip OK"
 
+      - name: Upload Chat skill zip
+        uses: actions/upload-artifact@v4
+        with:
+          name: xai-bug-reporter-skill
+          path: dist/xai-bug-reporter.zip
+          if-no-files-found: error
+
       - name: Summary
         run: echo "All required validation checks passed."
