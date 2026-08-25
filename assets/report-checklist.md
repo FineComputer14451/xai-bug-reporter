@@ -1,8 +1,12 @@
 # xAI / Grok Bug Report Checklist
 
+```
+-----BEGIN REPORT-----
+Status: READY | INCOMPLETE
+
 === TRIAGE ===
 Severity: [Critical / High / Medium / Low]
-Category: [Crash / Performance / UI / Auth-Billing / Generation / Quota / Other]
+Category: [Crash / freeze · Performance / latency · UI / rendering · Authentication / subscription / billing · Image or video generation · Quota / rate-limit · Other]
 Impact: [one or two sentences]
 
 === REQUIRED ===
@@ -14,19 +18,23 @@ System & app info:
   - Grok app or browser version:
   - Additional (GPU, etc.):
 Bug description:
+
+Evidence:
+  Conversation share link (prefer current chat):
+  Screenshot attached / available: [yes/no]
+
+=== PREFERRED ===
 Steps to reproduce:
   1.
   2.
   3.
-Evidence:
-  - Conversation share link (prefer current chat):
-  - Share ID (if parsed):
-  - Screenshot attached / available: [yes/no]
 
 === BILLING (if applicable) ===
 Invoice / receipt number:
 
 === NOTES ===
-Workaround exists: [yes/no — describe]
+Workaround:
 Frequency: [always / intermittent / once]
 Reported from inside the chat where the bug occurred: [yes/no]
+-----END REPORT-----
+```
