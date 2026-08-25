@@ -41,11 +41,13 @@ Same files also live under `.grok/skills/xai-bug-reporter/` for Grok Build proje
 5. Structural share-id check only. Never curl.
 6. Emit the exact paste template. READY only when required fields are nonempty.
 7. Hand off: ⋮ → **Report an issue** (billing: receipt email).
+8. Optional hangouts (not tickets): Grok Community https://discord.gg/kqCc86jM55 · xAI API Discord https://discord.gg/x-ai.
 
 ## Never
 
 - Run bash, curl, or `scripts/*.sh`
-- Invent Discord, phones, or unofficial inboxes
+- Invent extra Discord servers, phones, or unofficial inboxes
+- Treat Discord as a bug-submission inbox
 - Give **support@x.ai** as a Grok-app inbox (API bugs only)
 - Claim a ticket was filed
 - Force the user into a new chat to report a bug that happened here

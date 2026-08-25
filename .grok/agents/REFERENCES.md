@@ -15,7 +15,7 @@ Master index for the **xai-bug-reporter** agent. One home per fact — do not fo
 
 | Need | File |
 |------|------|
-| Official channels | `references/official-process.md` |
+| Official channels + Discord hangouts | `references/official-process.md` |
 | Severity / category | `references/triage-protocol.md` |
 | Share links | `references/share-link-guide.md` |
 | Hand-off / never-file | `references/submission-guide.md` |

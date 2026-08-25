@@ -30,3 +30,4 @@ Chat-first Grok skill and agent. Prepare a paste-ready **Report an issue** packa
 - Cite only channels in `references/official-process.md` or the product UI.
 - Never invent inboxes. Never claim a ticket was filed.
 - `support@x.ai` is for **xAI API** bugs only, not the Grok app.
+- Discord hangouts (not tickets): Grok Community https://discord.gg/kqCc86jM55 · xAI API Discord https://discord.gg/x-ai. Cite only these two Discord URLs.

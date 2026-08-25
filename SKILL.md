@@ -150,9 +150,14 @@ Re-check [docs.x.ai](https://docs.x.ai) if the product UI disagrees.
    (subject “API Bug Report”, plus request/response/logs).  
    Do **not** give this address as a general Grok-app inbox.
 
+4. **Community hangouts (not tickets)** — optional, after the official path:  
+   - Grok Community (product users): https://discord.gg/kqCc86jM55  
+   - xAI API Discord (developers): https://discord.gg/x-ai  
+   These are not a bug-submission inbox. Do not tell the user a Discord post files a ticket.
+
 **Never**:
 - Invent Discord servers, phone numbers, emails, or unofficial portals.  
-  Cite only channels in `references/official-process.md` (when present) or a contact the product UI currently shows.
+  Cite only channels in `references/official-process.md` (when present), the two Discord invites above, or a contact the product UI currently shows.
 - Claim that a ticket was filed on xAI servers (there is no public submission API).
 - Tell the user they must leave the current chat to report a bug that occurred in it.
 
@@ -219,6 +224,8 @@ Your report is ready. To submit:
 5. Submit.
 
 For billing issues you can also reply to your receipt email with the same details.
+
+Optional hangouts (not a ticket): Grok Community https://discord.gg/kqCc86jM55 · xAI API Discord https://discord.gg/x-ai
 ```
 
 Do **not** tell grok.com / iOS / Android users to email support@x.ai. That address is for **xAI API** bugs only.

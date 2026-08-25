@@ -437,6 +437,31 @@ else
 fi
 
 ran=$((ran + 1))
+if ! echo "$skill_body" | grep -q -- 'discord.gg/kqCc86jM55' \
+  || ! echo "$skill_body" | grep -q -- 'discord.gg/x-ai'; then
+  fail=$((fail + 1))
+  echo "FAIL packed SKILL.md missing Grok Community or xAI API Discord invite"
+elif echo "$skill_body" | grep -q -- 'No public Discord'; then
+  fail=$((fail + 1))
+  echo "FAIL packed SKILL.md still denies public Discord hangouts"
+else
+  echo "OK   packed SKILL.md cites both Discord hangouts (not tickets)"
+fi
+
+ran=$((ran + 1))
+official_body=$(zip_extract "$ZIP" xai-bug-reporter/references/official-process.md 2>/dev/null || true)
+if ! echo "$official_body" | grep -q -- 'discord.gg/kqCc86jM55' \
+  || ! echo "$official_body" | grep -q -- 'discord.gg/x-ai'; then
+  fail=$((fail + 1))
+  echo "FAIL packed official-process.md missing Discord hangout invites"
+elif ! echo "$official_body" | grep -q -- 'bug-submission inbox'; then
+  fail=$((fail + 1))
+  echo "FAIL packed official-process.md does not mark Discord as not a ticket"
+else
+  echo "OK   packed official-process.md documents Discord hangouts as not tickets"
+fi
+
+ran=$((ran + 1))
 if ! echo "$listing" | grep -q -- 'xai-bug-reporter/assets/report-checklist.md'; then
   fail=$((fail + 1))
   echo "FAIL zip missing assets/report-checklist.md"

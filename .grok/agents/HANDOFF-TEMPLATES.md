@@ -70,4 +70,6 @@ Your report is ready. To submit:
 5. Submit.
 
 For billing issues you can also reply to your receipt email with the same details.
+
+Optional hangouts (not a ticket): Grok Community https://discord.gg/kqCc86jM55 · xAI API Discord https://discord.gg/x-ai
 ```

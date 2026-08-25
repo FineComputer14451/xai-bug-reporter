@@ -19,7 +19,8 @@ Canonical channels: `references/official-process.md`.
 - POST or otherwise submit a ticket to xAI servers
 - Claim that a report has been “filed” or “ticketed”
 - Open the Report an issue UI on the user’s behalf (the user must do that)
-- Invent support emails, Discord, phone numbers, or unofficial portals
+- Invent support emails, extra Discord servers, phone numbers, or unofficial portals
+- Treat Discord as a bug-submission inbox (Grok Community and xAI API Discord are hangouts only)
 
 ## User-facing hand-off language (recommended)
 
@@ -33,6 +34,8 @@ Your report is ready. To submit:
 5. Submit.
 
 For billing issues you can also reply to your receipt email with the same details.
+
+Optional hangouts (not a ticket): Grok Community https://discord.gg/kqCc86jM55 · xAI API Discord https://discord.gg/x-ai
 ```
 
 Do **not** tell grok.com / iOS / Android users to email support@x.ai. That address is documented for **xAI API** bugs only.

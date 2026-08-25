@@ -55,6 +55,8 @@ To submit via the official path:
 
 Billing alternative: reply to your receipt email with the same details + invoice number.
 
+Optional hangouts (not a ticket): Grok Community https://discord.gg/kqCc86jM55 · xAI API Discord https://discord.gg/x-ai
+
 This skill does not (and cannot) submit the ticket for you — there is no public xAI bug API.
 EOF
 

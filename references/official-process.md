@@ -2,7 +2,7 @@
 
 This file is the **channel source of truth** for the skill. Other files should point here instead of inventing inboxes.
 
-Last checked against public docs: **2026-08-24**.
+Last checked against public docs: **2026-08-25**.
 
 ## Consumer Grok (grok.com, iOS, Android)
 
@@ -22,11 +22,21 @@ For **API** bugs, xAI documents emailing **support@x.ai** with subject “API Bu
 
 Do not present this address as the inbox for grok.com / iOS / Android product bugs.
 
+## Community hangouts (not tickets)
+
+These Discord invites are public xAI / Grok community servers. They are **not** a bug-submission inbox, not a billing path, and not a substitute for in-product **Report an issue** or `support@x.ai` for API bugs.
+
+| Server | Who it is for | Invite |
+|--------|----------------|--------|
+| **Grok Community** | grok.com / iOS / Android users | https://discord.gg/kqCc86jM55 |
+| **xAI API Discord** | API / developer community | https://discord.gg/x-ai |
+
+Cite **only** these two Discord URLs. Never invent additional servers. Do not claim a Discord message files a ticket.
+
 ## What does not exist (publicly)
 
 - No public bug-submission API
 - No public phone support
-- No public Discord (or other unofficial portals)
 - No guaranteed SLA / response timeline
 
 ## Agent rules
@@ -34,6 +44,6 @@ Do not present this address as the inbox for grok.com / iOS / Android product bu
 - Prefer in-product **Report an issue** over email whenever the issue is in Grok (web or apps).
 - When the bug occurs in the current chat, treat that chat as the evidence source. Help the user create a share link of *this* conversation.
 - Cite **only** channels documented above (or a contact the **product UI itself** currently shows). If docs.x.ai and the UI disagree, tell the user to follow the product UI and re-check the FAQ.
-- Never invent additional emails, Discord servers, phone numbers, or portals.
+- Never invent additional emails, Discord servers, phone numbers, or portals. The two Discord invites above are the only Discord URLs this skill may cite.
 - Subscription tier is required for triage value even though the public FAQ does not always list it explicitly.
 - System and app information (OS, browser/app version, device model, GPU when relevant) improves engineering triage and should be collected.

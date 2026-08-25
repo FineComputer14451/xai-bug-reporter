@@ -160,6 +160,22 @@ export function Desk() {
             >
               SKILL.md
             </a>
+            <a
+              href="https://discord.gg/kqCc86jM55"
+              target="_blank"
+              rel="noreferrer"
+              className="hidden min-h-11 items-center rounded-md border border-border bg-raised px-3 text-sm text-fg lg:inline-flex"
+            >
+              Grok Community
+            </a>
+            <a
+              href="https://discord.gg/x-ai"
+              target="_blank"
+              rel="noreferrer"
+              className="hidden min-h-11 items-center rounded-md border border-border bg-raised px-3 text-sm text-fg lg:inline-flex"
+            >
+              xAI API Discord
+            </a>
             <CompletenessPill value={percent} />
             <a
               href="https://github.com/FineComputer14451/xai-bug-reporter"

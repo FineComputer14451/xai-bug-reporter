@@ -8,6 +8,8 @@ Install on [grok.com/skills](https://grok.com/skills), then say “report a bug�
 
 [![Grok Chat](https://img.shields.io/badge/Grok_Chat-skills-0C0C0D?logo=x&logoColor=white)](https://grok.com/skills)
 [![SKILL.md](https://img.shields.io/badge/SKILL.md-raw-222?logo=markdown&logoColor=white)](https://github.com/FineComputer14451/xai-bug-reporter/raw/main/SKILL.md)
+[![Grok Community](https://img.shields.io/badge/Discord-Grok_Community-5865F2?logo=discord&logoColor=white)](https://discord.gg/kqCc86jM55)
+[![xAI API Discord](https://img.shields.io/badge/Discord-xAI_API-5865F2?logo=discord&logoColor=white)](https://discord.gg/x-ai)
 [![Web desk](https://img.shields.io/badge/web_desk-live-0C0C0D?logo=github&logoColor=white)](https://finecomputer14451.github.io/xai-bug-reporter)
 [![Validate skill](https://github.com/FineComputer14451/xai-bug-reporter/actions/workflows/validate.yml/badge.svg?branch=main)](https://github.com/FineComputer14451/xai-bug-reporter/actions/workflows/validate.yml)
 [![Dependabot](https://img.shields.io/badge/Dependabot-enabled-025E8C?logo=dependabot&logoColor=white)](https://github.com/FineComputer14451/xai-bug-reporter/network/updates)
@@ -112,6 +114,17 @@ xAI’s public path for product bugs is:
 There is **no public bug-submission API**. This skill automates everything *up to* a validated paste package, then hands the user clear in-product steps.
 
 Canonical reference: [xAI FAQ — How do I report a bug or reach a human?](https://docs.x.ai/grok/faq#how-do-i-report-a-bug-or-reach-a-human)
+
+### Community hangouts (not tickets)
+
+These are public Discord servers. They do **not** file a bug report.
+
+| Server | For | Invite |
+|--------|-----|--------|
+| **Grok Community** | grok.com / iOS / Android users | https://discord.gg/kqCc86jM55 |
+| **xAI API Discord** | API / developer community | https://discord.gg/x-ai |
+
+Product bugs still go through in-product **Report an issue**. API bugs still go to **support@x.ai**. Cite only these two Discord URLs.
 
 ---
 
@@ -236,7 +249,7 @@ Platform tips:
 ## Hard rules
 
 - Prefer in-product **Report an issue**. Billing: reply to the receipt email (refunds: [accounts.x.ai/refund](https://accounts.x.ai/refund)).
-- Cite only documented channels (`references/official-process.md`). Never invent emails, Discord, phones, or unofficial portals.
+- Cite only documented channels (`references/official-process.md`). Never invent emails, extra Discord servers, phones, or unofficial portals. Discord hangouts are not a ticket.
 - **support@x.ai** is documented for **xAI API** bugs only ([debugging](https://docs.x.ai/developers/debugging)), not as a general Grok-app inbox.
 - Never invent or alter share URLs.
 - Never claim a ticket was filed on xAI servers (no public submission API).
