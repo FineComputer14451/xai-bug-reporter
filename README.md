@@ -29,8 +29,6 @@ GitHub Pages publishes [`docs/`](docs/) via [Deploy GitHub Pages](https://github
 
 **First-time enable (required once):** [Settings → Pages](https://github.com/FineComputer14451/xai-bug-reporter/settings/pages) → **Source: GitHub Actions**. Then re-run the **Deploy GitHub Pages** workflow (Actions → workflow_dispatch, or push to `docs/`).
 
-Until Pages is enabled, the same desk is on jsDelivr: [cdn.jsdelivr.net/…/docs/index.html](https://cdn.jsdelivr.net/gh/FineComputer14451/xai-bug-reporter@main/docs/index.html)
-
 - Public page: [`docs/`](docs/)
 - Grok Build source: [`web/`](web/)
 
