@@ -1,0 +1,277 @@
+name: Validate skill
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Structure + scripts
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Required files exist
+        run: |
+          set -euo pipefail
+          required=(
+            SKILL.md
+            AGENTS.md
+            README.md
+            LICENSE
+            .grok/skills/xai-bug-reporter/SKILL.md
+            .grok/agents/xai-bug-reporter.md
+            .grok/agents/REFERENCES.md
+            .grok/agents/HANDOFF-TEMPLATES.md
+            assets/report-checklist.md
+            assets/report.env.example
+            references/official-process.md
+            references/share-link-guide.md
+            references/submission-guide.md
+            references/triage-protocol.md
+            scripts/assemble-report.sh
+            scripts/collect-platform-info.sh
+            scripts/pack-skill.sh
+            scripts/parse-share-link.sh
+            scripts/prepare-submission.sh
+            scripts/score-severity.sh
+            scripts/validate-report.sh
+            scripts/validate-share-link.sh
+            tests/smoke.sh
+          )
+          missing=0
+          for f in "${required[@]}"; do
+            if [[ -f "$f" ]]; then
+              echo "✓ $f"
+            else
+              echo "✗ MISSING $f"
+              missing=1
+            fi
+          done
+          exit $missing
+
+      - name: SKILL.md frontmatter
+        run: |
+          set -euo pipefail
+          head -1 SKILL.md | grep -q '^---$'
+          grep -q '^name: xai-bug-reporter$' SKILL.md
+          grep -q '^description:' SKILL.md
+          grep -q '^user-invocable: true$' SKILL.md
+          # description should mention bug/report triggers
+          grep -qiE 'report a bug|report an issue|reach a human' SKILL.md
+          grep -q '/xai-bug-reporter' SKILL.md
+          grep -q 'NEVER run bash' SKILL.md
+          grep -q 'one or two questions' SKILL.md
+          if grep -q 'SKILL_DIR' SKILL.md; then
+            echo "Chat-primary SKILL.md must not tell agents to use SKILL_DIR" >&2
+            exit 1
+          fi
+          # consumer hosts are instructions-only; do not advertise "Requires bash"
+          compat=$(grep -E '^compatibility:' SKILL.md || true)
+          if echo "$compat" | grep -qi -- 'Requires bash'; then
+            echo "compatibility must not require bash (grok.com / Android are instructions-only)" >&2
+            echo "$compat" >&2
+            exit 1
+          fi
+          echo "Frontmatter OK"
+
+      - name: No symlinks in git index or worktree
+        run: |
+          set -euo pipefail
+          # Skill hosts reject zip members that are symlinks
+          # (GitHub Download ZIP is git archive + repo-branch prefix).
+          while read -r mode _sha _stage path; do
+            if [[ "$mode" == "120000" ]]; then
+              echo "tracked symlink not allowed: $path" >&2
+              exit 1
+            fi
+          done < <(git ls-files -s)
+          while IFS= read -r path; do
+            if [[ -L "$path" ]]; then
+              echo "worktree symlink not allowed: $path" >&2
+              exit 1
+            fi
+          done < <(git ls-files; git ls-files -o --exclude-standard)
+          [[ -f .grok/skills/xai-bug-reporter/SKILL.md ]]
+          grep -q '^name: xai-bug-reporter$' .grok/skills/xai-bug-reporter/SKILL.md
+          cmp -s SKILL.md .grok/skills/xai-bug-reporter/SKILL.md
+          diff -rq assets .grok/skills/xai-bug-reporter/assets
+          diff -rq references .grok/skills/xai-bug-reporter/references
+          diff -rq scripts .grok/skills/xai-bug-reporter/scripts
+          echo "No git or worktree symlinks; project skill copies match"
+
+      - name: Bash syntax (bash -n)
+        run: |
+          set -euo pipefail
+          for s in scripts/*.sh; do
+            bash -n "$s"
+            echo "✓ syntax $s"
+          done
+
+      - name: Shebang + git mode
+        run: |
+          set -euo pipefail
+          for s in scripts/*.sh; do
+            head -1 "$s" | grep -q '^#!/usr/bin/env bash'
+            echo "✓ shebang $s"
+          done
+          # Prefer 100755 locally. Helpers are invoked with bash, so 100644 is OK.
+          while read -r mode _sha _stage path; do
+            echo "git mode $mode $path"
+            case "$mode" in
+              100755|100644) ;;
+              *) echo "unexpected mode $mode $path" >&2; exit 1 ;;
+            esac
+          done < <(git ls-files -s scripts/*.sh)
+
+      - name: Install shellcheck (optional lint)
+        continue-on-error: true
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq shellcheck
+
+      - name: Shellcheck scripts
+        continue-on-error: true
+        run: |
+          if command -v shellcheck >/dev/null 2>&1; then
+            shellcheck -x scripts/*.sh || true
+            echo "shellcheck completed (non-blocking)"
+          else
+            echo "shellcheck not installed — skip"
+          fi
+
+      - name: Smoke — score-severity
+        run: |
+          set -euo pipefail
+          out=$(echo "app crashes every time I open share menu" | bash scripts/score-severity.sh)
+          echo "$out"
+          echo "$out" | grep -qiE 'Suggested severity:'
+
+      - name: Smoke — parse-share-link
+        run: |
+          set -euo pipefail
+          out=$(bash scripts/parse-share-link.sh "https://grok.com/share/ci-test-id-123")
+          echo "$out"
+          echo "$out" | grep -q 'Share ID:   ci-test-id-123'
+          bash scripts/parse-share-link.sh --json "https://x.com/i/grok/share/abcXYZ" | grep -q '"ok": true'
+
+      - name: Smoke — validate-share-link offline
+        run: |
+          set -euo pipefail
+          bash scripts/validate-share-link.sh --offline "https://grok.com/share/ci-test-id-123"
+          # bad host must fail
+          if bash scripts/validate-share-link.sh --offline "https://example.com/nope"; then
+            echo "expected failure for non-Grok host" >&2
+            exit 1
+          fi
+          # share id required
+          if bash scripts/validate-share-link.sh --offline "https://grok.com/"; then
+            echo "expected failure for missing share id" >&2
+            exit 1
+          fi
+          echo "offline validation OK"
+
+      - name: Smoke — assemble + validate-report
+        run: |
+          set -euo pipefail
+          cat > /tmp/ci-report.env << 'EOF'
+          SEVERITY=High
+          CATEGORY=UI
+          IMPACT=CI smoke test impact statement
+          ACCOUNT_EMAIL=ci@example.com
+          SUBSCRIPTION_TIER=SuperGrokPro
+          PLATFORM=Web
+          SYSTEM_INFO=Ubuntu GitHub Actions runner
+          DESCRIPTION=Automated CI smoke test of assemble and validate pipeline
+          STEPS=1. Push to main\n2. Workflow runs\n3. All checks pass
+          SHARE_LINK=
+          SCREENSHOT=yes
+          INVOICE=
+          WORKAROUND=
+          FREQUENCY=once
+          IN_CHAT=yes
+          EOF
+          # strip accidental leading spaces from heredoc if any
+          sed -i 's/^[[:space:]]*//' /tmp/ci-report.env
+          report=$(bash scripts/assemble-report.sh /tmp/ci-report.env)
+          echo "$report"
+          echo "$report" | bash scripts/validate-report.sh
+          # empty labels must not pass
+          : > /tmp/ci-empty.env
+          if bash scripts/assemble-report.sh /tmp/ci-empty.env | bash scripts/validate-report.sh; then
+            echo "expected failure for empty assembled report" >&2
+            exit 1
+          fi
+
+      - name: Smoke — tests/smoke.sh
+        run: |
+          set -euo pipefail
+          bash tests/smoke.sh
+
+      - name: Smoke — prepare-submission
+        run: |
+          set -euo pipefail
+          cat > /tmp/ci-prepare.env << 'EOF'
+          SEVERITY=High
+          CATEGORY=UI
+          IMPACT=CI smoke test impact statement
+          ACCOUNT_EMAIL=ci@example.com
+          SUBSCRIPTION_TIER=SuperGrokPro
+          PLATFORM=Web
+          SYSTEM_INFO=Ubuntu GitHub Actions runner
+          DESCRIPTION=Automated CI smoke test of prepare-submission pipeline
+          STEPS=1. Push to main\n2. Workflow runs\n3. All checks pass
+          SHARE_LINK=
+          SCREENSHOT=yes
+          INVOICE=
+          WORKAROUND=
+          FREQUENCY=once
+          IN_CHAT=yes
+          EOF
+          sed -i 's/^[[:space:]]*//' /tmp/ci-prepare.env
+          out=$(bash scripts/prepare-submission.sh /tmp/ci-prepare.env)
+          echo "$out"
+          echo "$out" | grep -q -- '-----BEGIN REPORT-----'
+          echo "$out" | grep -q 'STATUS: READY TO SUBMIT'
+          echo "$out" | grep -q 'Report an issue'
+
+      - name: Smoke — collect-platform-info
+        run: |
+          set -euo pipefail
+          bash scripts/collect-platform-info.sh | head -20
+          bash scripts/collect-platform-info.sh --json | grep -q '"os_name"'
+
+      - name: Smoke — pack consumer zip
+        run: |
+          set -euo pipefail
+          bash scripts/pack-skill.sh
+          listing=$(unzip -l dist/xai-bug-reporter.zip)
+          echo "$listing"
+          if ! echo "$listing" | grep -q -- 'xai-bug-reporter/SKILL.md'; then
+            echo "zip missing xai-bug-reporter/SKILL.md" >&2
+            exit 1
+          fi
+          unzip -p dist/xai-bug-reporter.zip xai-bug-reporter/SKILL.md | grep -q -- '^name: xai-bug-reporter$'
+          unzip -p dist/xai-bug-reporter.zip xai-bug-reporter/SKILL.md | grep -q -- 'NEVER run bash'
+          if echo "$listing" | grep -q -- 'scripts/'; then
+            echo "consumer zip must not contain scripts/" >&2
+            exit 1
+          fi
+          echo "consumer zip OK"
+
+      - name: Upload Chat skill zip
+        uses: actions/upload-artifact@v4
+        with:
+          name: xai-bug-reporter-skill
+          path: dist/xai-bug-reporter.zip
+          if-no-files-found: error
+
+      - name: Summary
+        run: echo "All required validation checks passed."
