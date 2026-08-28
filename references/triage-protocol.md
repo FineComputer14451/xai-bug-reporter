@@ -1,6 +1,14 @@
 # Formal triage protocol
 
-## 1. Severity scoring (mandatory first step)
+## 0. Product + surface (mandatory first)
+
+Name the product and surface before scoring severity.
+
+Examples: Grok Chat on grok.com · Grok Imagine on iOS · Grok Voice on Android · Grok Build on web · Companions on iOS · xAI API on console.x.ai · Imagine API · Voice API · Grok in X on x.com · SuperGrok billing on web.
+
+If unknown, ask. Do not assume grok.com.
+
+## 1. Severity scoring
 
 Apply the severity table below, then confirm Severity with the user.
 NEVER run bash. Score from the description in Chat; suggestions only.
@@ -19,7 +27,11 @@ NEVER run bash. Score from the description in Chat; suggestions only.
 - UI / rendering
 - Authentication / subscription / billing
 - Image or video generation
+- Voice / audio
+- Grok Build / generated apps
+- API / Console / developer tooling
 - Quota / rate-limit
+- Grok in X / X integration
 - Other (briefly specify)
 
 ## 3. Impact statement
@@ -29,6 +41,7 @@ One or two sentences: what the user cannot do, how often it happens, and whether
 ## 4. Agent decision rules
 
 - If the user is vague, score from the description, then ask clarifying questions before finalizing Severity/Category.
-- High or Critical → strongly push for share link of the failing chat + screenshot + exact reproduction steps.
+- High or Critical → strongly push for share link of the failing chat + screenshot + exact reproduction steps. API High/Critical → request id, model, sanitized payload.
 - Never override a user’s explicit severity choice; document disagreement if your suggestion differs.
-- Always emit a `=== TRIAGE ===` block in the finished report.
+- Always emit a `=== TRIAGE ===` block in the finished report, including Product and Surface.
+- Route the hand-off from Product + Surface using `references/official-process.md`. Never mix Grok-app, API, X, and billing inboxes.
