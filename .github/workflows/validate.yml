@@ -267,7 +267,7 @@ jobs:
           echo "consumer zip OK"
 
       - name: Upload Chat skill zip
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: xai-bug-reporter-skill
           path: dist/xai-bug-reporter.zip
