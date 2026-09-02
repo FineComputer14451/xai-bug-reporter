@@ -9,6 +9,7 @@ import {
   scoreReport,
   suggestSeverity,
   submitPath,
+  TIERS,
   type ReportDraft,
 } from "./report.ts";
 
@@ -84,6 +85,17 @@ describe("companion report", () => {
     assert.match(text, /=== PREFERRED ===/);
     assert.match(text, /=== BILLING \(if applicable\) ===/);
     assert.match(text, /Reported from inside the chat where the bug occurred:/);
+    assert.match(text, /^Product: Grok Chat$/m);
+    assert.match(text, /^Surface: Web$/m);
+    assert.match(text, /^Submit via: Grok ⋮ Report an issue$/m);
+    assert.match(text, /^Expected vs actual:/m);
+    assert.match(text, /^Outage check \(status\.x\.ai\):/m);
+  });
+
+  it("includes SuperGrok Heavy as a subscription tier", () => {
+    assert.ok(TIERS.some((t) => t.id === "super-grok-heavy"));
+    const text = formatReport(filled({ subscription: "super-grok-heavy" }));
+    assert.match(text, /Subscription tier: SuperGrok Heavy/);
   });
 
   it("folds model and request id into the description", () => {
@@ -92,6 +104,8 @@ describe("companion report", () => {
     );
     assert.match(text, /Model: grok-4\.5/);
     assert.match(text, /Request id: req_9/);
+    assert.match(text, /Submit via: support@x\.ai \(API Bug Report\)/);
+    assert.match(text, /API request \/ response \/ logs \(sanitized\): .*request id req_9/);
   });
 
   it("parses share links structurally", () => {

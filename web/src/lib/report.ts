@@ -213,6 +213,7 @@ export const TIERS = [
   { id: "free", label: "Free" },
   { id: "super-grok", label: "SuperGrok" },
   { id: "super-grok-pro", label: "SuperGrok Pro" },
+  { id: "super-grok-heavy", label: "SuperGrok Heavy" },
   { id: "x-premium", label: "X Premium" },
   { id: "x-premium-plus", label: "Premium+" },
   { id: "api", label: "API / Enterprise" },
@@ -598,11 +599,32 @@ export function formatReport(draft: ReportDraft, _filedAt = new Date()) {
         ? "no"
         : "—";
 
+  const submit = submitPath(draft);
+  const via =
+    submit === "api-email"
+      ? "support@x.ai (API Bug Report)"
+      : submit === "billing-receipt"
+        ? "receipt email + accounts.x.ai/refund"
+        : "Grok ⋮ Report an issue";
+  const expectedVsActual = [draft.expected.trim(), draft.actual.trim()]
+    .filter(Boolean)
+    .join(" / ") || "—";
+  const apiLogs = [
+    draft.endpoint.trim() && `endpoint ${draft.endpoint.trim()}`,
+    draft.requestId.trim() && `request id ${draft.requestId.trim()}`,
+    draft.httpStatus.trim() && `HTTP ${draft.httpStatus.trim()}`,
+  ]
+    .filter(Boolean)
+    .join("; ") || "—";
+
   const lines = [
     "-----BEGIN REPORT-----",
     `Status: ${status}`,
     "",
     "=== TRIAGE ===",
+    `Product: ${product?.label ?? "—"}`,
+    `Surface: ${platform}`,
+    `Submit via: ${via}`,
     `Severity: ${severity}`,
     `Category: ${category}`,
     `Impact: ${impact}`,
@@ -617,17 +639,21 @@ export function formatReport(draft: ReportDraft, _filedAt = new Date()) {
     "Evidence:",
     `  Conversation share link: ${share}`,
     `  Screenshot: ${screenshot}`,
+    `  API request / response / logs (sanitized): ${apiLogs}`,
     "",
     "=== PREFERRED ===",
     `Steps to reproduce: ${steps}`,
+    `Expected vs actual: ${expectedVsActual}`,
     "",
     "=== BILLING (if applicable) ===",
     `Invoice / receipt number: ${draft.invoice.trim() || "—"}`,
+    `Purchase channel (Web / App Store / Google Play / X / API): —`,
     "",
     "=== NOTES ===",
     `Workaround: ${workaround}`,
     `Frequency: ${frequency}`,
     `Reported from inside the chat where the bug occurred: ${reportedFrom}`,
+    `Outage check (status.x.ai): —`,
     "-----END REPORT-----",
   ];
 
