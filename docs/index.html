@@ -34,7 +34,7 @@
       --ok: #9dba8c;
     }
     * { box-sizing: border-box; }
-    html, body { margin: 0; background: var(--bg); color: var(--fg); font-family: \"IBM Plex Sans\", system-ui, sans-serif; }
+    html, body { margin: 0; background: var(--bg); color: var(--fg); font-family: "IBM Plex Sans", system-ui, sans-serif; }
     a { color: inherit; }
     header {
       border-bottom: 1px solid var(--line);
@@ -45,11 +45,11 @@
     .mark i { display: block; width: 4px; height: 20px; border-radius: 99px; background: var(--fg); }
     h1 { font-family: Syne, sans-serif; font-size: 1.15rem; margin: 0; }
     .sub { color: var(--subtle); font-size: 0.75rem; margin: 0.2rem 0 0; max-width: 42rem; line-height: 1.35; }
-    .pill { font-family: \"IBM Plex Mono\", monospace; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); border: 1px solid var(--line); border-radius: 999px; padding: 0.45rem 0.75rem; }
+    .pill { font-family: "IBM Plex Mono", monospace; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); border: 1px solid var(--line); border-radius: 999px; padding: 0.45rem 0.75rem; }
     .pill.ready { color: var(--ok); border-color: color-mix(in srgb, var(--ok) 40%, var(--line)); }
     main { display: grid; grid-template-columns: 1fr minmax(280px, 380px); gap: 0; max-width: 72rem; margin: 0 auto; }
     section { padding: 1.25rem; border-bottom: 1px solid var(--line); }
-    .n { font-family: \"IBM Plex Mono\", monospace; font-size: 11px; color: var(--subtle); letter-spacing: 0.12em; }
+    .n { font-family: "IBM Plex Mono", monospace; font-size: 11px; color: var(--subtle); letter-spacing: 0.12em; }
     h2 { font-size: 0.95rem; margin: 0.15rem 0 0.85rem; font-weight: 600; }
     .chips { display: flex; flex-wrap: wrap; gap: 0.4rem; }
     .chip {
@@ -66,7 +66,7 @@
     textarea { min-height: 88px; resize: vertical; }
     aside { border-left: 1px solid var(--line); background: var(--surface); padding: 1.25rem; }
     pre {
-      white-space: pre-wrap; word-break: break-word; font-family: \"IBM Plex Mono\", monospace;
+      white-space: pre-wrap; word-break: break-word; font-family: "IBM Plex Mono", monospace;
       font-size: 12px; line-height: 1.5; color: #d8d6cf; margin: 0.75rem 0 0;
     }
     .actions { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.75rem; }
@@ -76,7 +76,7 @@
     }
     .btn.primary { background: var(--fg); color: var(--bg); border-color: var(--fg); }
     .btn:disabled { opacity: 0.4; cursor: not-allowed; }
-    .sys { font-family: \"IBM Plex Mono\", monospace; font-size: 11px; color: var(--muted); display: grid; gap: 0.25rem; }
+    .sys { font-family: "IBM Plex Mono", monospace; font-size: 11px; color: var(--muted); display: grid; gap: 0.25rem; }
     .sys b { color: var(--subtle); font-weight: 500; min-width: 5.5rem; display: inline-block; }
     .gh { width: 44px; height: 44px; display: grid; place-items: center; color: var(--subtle); border-radius: 8px; }
     .gh:hover { background: var(--raised); color: var(--fg); }
@@ -99,7 +99,7 @@
       <span class="mark" aria-hidden="true"><i></i></span>
       <div>
         <h1>xAI Bug Reporter</h1>
-        <p class="sub">Paste-ready reports for every public xAI product — Chat, Imagine, Voice, Build, API, billing, and Grok in X. Official channels only.</p>
+        <p class="sub">Paste-ready reports for every public xAI product — Chat, Imagine, Voice, Build, API, billing, and Grok in X. Official channels only. Skill v1.4.0.</p>
       </div>
     </div>
     <div style="display:flex;align-items:center;gap:0.5rem;flex:none">
@@ -110,11 +110,12 @@
     </div>
   </header>
   <div class="chatbar">
-    <p>Prefer Grok Chat. Upload SKILL.md at grok.com/skills, then say “report a bug”. This desk covers every public xAI product and routes you to the official path.</p>
+    <p>Prefer Grok Chat. Upload SKILL.md at grok.com/skills, then say “report a bug”. This desk covers every public xAI product and routes you to the official path. Glance at status.x.ai for outages — it does not replace Report an issue.</p>
     <a class="btn primary" href="https://grok.com/skills">Add to Grok Chat</a>
     <a class="btn" href="https://github.com/FineComputer14451/xai-bug-reporter/raw/main/SKILL.md">SKILL.md</a>
     <a class="btn" href="https://discord.gg/kqCc86jM55">Grok Community</a>
     <a class="btn" href="https://discord.gg/x-ai">xAI API Discord</a>
+    <a class="btn" href="https://status.x.ai">status.x.ai</a>
   </div>
   <main>
     <div>
@@ -188,9 +189,12 @@
       ["build","Grok Build","build"],
       ["companions","Companions","other"],
       ["bot","Grok Bot","other"],
+      ["connectors","Connectors","other"],
+      ["files","Files","other"],
       ["grokipedia","Grokipedia","other"],
       ["accounts","Accounts / login","other"],
       ["billing","Billing","billing"],
+      ["credits","Extra credits / Auto Top Up","billing"],
       ["api","xAI API","api"],
       ["console","Console","api"],
       ["imagine-api","Imagine API","imagine"],
@@ -285,7 +289,7 @@
     }
     function hasEvidence() { return val("screenshot").length > 0 || hasShareId(val("share")); }
     function submitPath() {
-      if (state.product === "billing") return "billing";
+      if (state.product === "billing" || state.product === "credits") return "billing";
       if (["api","console","imagine-api","voice-api"].includes(state.product)) return "api";
       if (state.product === "grok-x") return "x";
       return "report";
@@ -321,7 +325,8 @@
         `  Screenshot: ${val("screenshot") || "—"}`,
         `  API request / response / logs (sanitized): —`,"",
         "=== PREFERRED ===",
-        `Steps to reproduce: ${val("steps") || "—"}`,"",
+        `Steps to reproduce: ${val("steps") || "—"}`,
+        `Expected vs actual: ${[val("expected"), val("actual")].filter(Boolean).join(" / ") || "—"}`,"",
         "=== BILLING (if applicable) ===",
         `Invoice / receipt number: ${val("invoice") || "—"}`,
         `Purchase channel (Web / App Store / Google Play / X / API): —`,"",
@@ -329,6 +334,7 @@
         `Workaround: ${val("workaround") || "—"}`,
         `Frequency: ${lab(FREQS, state.frequency)}`,
         `Reported from inside the chat where the bug occurred: ${lab(INCHAT, state.inchat)}`,
+        `Outage check (status.x.ai): —`,
         "-----END REPORT-----"
       ].join("\n");
     }
@@ -342,14 +348,14 @@
       if (!state.subscription) missing.push("Subscription tier");
       if (val("title").length < 8 && val("actual").length < 8) missing.push("Bug description");
       if (!hasEvidence()) missing.push("Evidence");
-      if (state.product === "billing" && !val("invoice")) missing.push("Invoice / receipt number");
+      if ((state.product === "billing" || state.product === "credits") && !val("invoice")) missing.push("Invoice / receipt number");
       return missing;
     }
 
     function render() {
       const missing = missingFields();
       const preferred = val("steps").length < 8;
-      const tracked = 8 + (state.product === "billing" ? 1 : 0);
+      const tracked = 8 + ((state.product === "billing" || state.product === "credits") ? 1 : 0);
       const filled = tracked - missing.length - (preferred ? 1 : 0);
       const pct = Math.max(0, Math.round((filled / (tracked + 1)) * 100));
       const pill = $("score");
