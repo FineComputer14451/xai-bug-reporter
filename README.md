@@ -23,7 +23,7 @@ Install on [grok.com/skills](https://grok.com/skills), then say “report a bug�
 
 ## Install in Grok Chat
 
-**Primary host** is Grok Chat — grok.com, iOS, and Android ([Grok Skills](https://x.ai/news/grok-skills)). No bash. Skill version **1.4.0**. The agent follows `SKILL.md` and the supporting `references/` + `assets/` files when those are in the upload.
+**Primary host** is Grok Chat — grok.com, iOS, and Android ([Grok Skills](https://x.ai/news/grok-skills)). No bash. Skill version **1.4.1**. The agent follows `SKILL.md` and the supporting `references/` + `assets/` files when those are in the upload.
 
 ### grok.com (web)
 

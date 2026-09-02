@@ -7,7 +7,7 @@ metadata:
   short-description: Prepare an xAI/Grok bug report in Chat
   author: FineComputer14451
   user-invocable: true
-  version: "1.4.0"
+  version: "1.4.1"
 ---
 
 # xAI Bug Reporter
@@ -31,6 +31,7 @@ This skill is for **Grok Chat**: grok.com, iOS, and Android.
 - NEVER fetch or curl a share URL or status.x.ai. Structural checks and public wording only.
 - Ask the user for device model, OS version, and Grok app or browser version. Do not probe the host.
 - Assemble the paste block **in this chat**.
+- Read this **whole** file. READY gate and Hand-off language are mandatory even if triage already looks done.
 
 ## Supporting files
 
@@ -67,7 +68,7 @@ Numbered steps are the whole skill. No scripts.
 
 1. **Stay here** — Acknowledge the bug (this chat, a linked chat, or another xAI surface). The report is prepared in this thread.
 2. **Name the product** — Identify **Product** and **Surface** before anything else. Use the matrix in `references/official-process.md` when present. If unclear, ask one question: Chat / Imagine / Voice / Build / Companions / Bot / Connectors / Files / Grokipedia / accounts / billing / credits / API / Console / Grok in X / other.
-3. **Reuse what you already know** — Pull the bug description from this thread. Infer **Platform** when obvious: grok.com / browser → Web; Grok iOS app → iOS; Grok Android app → Android; console.x.ai / api.x.ai → API / Console; x.com / X apps → X. Confirm if unsure. Reuse a known **Subscription tier** from this chat’s user context when present. Never invent an account email.
+3. **Reuse what you already know** — Pull the bug description from this thread. Fill **Surface** and **Platform** as two fields, never copies of each other. **Surface** is where the bug happened (grok.com, iOS Grok app, Android Grok app, grokipedia.com, console.x.ai, x.com, …). **Platform** is the client family: grok.com / browser → Web; Grok iOS app → iOS; Grok Android app → Android; console.x.ai / api.x.ai → API / Console; x.com / X apps → X. Confirm if unsure. Reuse a known **Subscription tier** from this chat’s user context when present. Never invent an account email.
 4. **Outage vs isolated** — If the user describes a total outage or “everyone is down”, tell them to glance at the public status page **https://status.x.ai** (and RSS https://status.x.ai/feed.xml). Do not fetch it. Still prepare a report. A status incident does not replace **Report an issue** or `support@x.ai`.
 5. **Triage early** — Propose Severity + Category + Impact from the description, then confirm. Suggestions only; the user’s choice wins.
 6. **Collect missing required fields** — Ask **one or two questions at a time**. Use `references/question-bank.md` when present. Do not dump an empty form. Grok Chat: prefer a share link of *this* conversation. API: sanitized request/response/logs, no keys. Billing: invoice / receipt number + purchase channel.
@@ -80,8 +81,9 @@ Numbered steps are the whole skill. No scripts.
 
 Always collect (or confirm) before **Status: READY**:
 
-- Product (Chat, Imagine, Voice, Build, Companions, Bot, Connectors, Files, Grokipedia, Accounts, Billing, Extra credits, API, Console, Imagine API, Voice API, Grok in X, other)
-- Surface / platform (Web / iOS / Android / X / API / Console / Other)
+- Product (Chat, Imagine, Voice, Build, Companions (iOS only), Bot, Connectors, Files, Grokipedia, Accounts, Billing, Extra credits, API, Console, Imagine API, Voice API, Grok in X, other)
+- Surface (where it happened: grok.com, iOS Grok app, Android Grok app, grokipedia.com, console.x.ai, x.com, …)
+- Platform (client family: Web / iOS / Android / X / API / Console / Other)
 - Account email
 - Subscription tier (Free, SuperGrok, SuperGrokPro, SuperGrok Heavy, API plan, X Premium, Extra credits, etc.)
 - System and app information (device model, OS version/build, Grok app or browser version; for API: SDK / client)
@@ -105,6 +107,8 @@ Preferred (push hard; list as missing if absent, but do **not** block READY):
 - **Files**: file type, approximate size, and whether upload, analysis, or delete at grok.com/files failed.
 - **API / Console**: model name, endpoint, HTTP status, request id or timestamp, sanitized payload. Never collect API keys.
 - **Grok in X**: say whether the X UI itself failed or only Grok’s answer did. X-service issues go to X, not xAI.
+- **Companions**: iOS only (FAQ: not on web or Android). If the user is on web or Android, they are not on Companions — re-identify the product.
+- **Grokipedia**: grokipedia.com has no separate inbox. If the user is in Grok, use **Report an issue**. Do not invent an email.
 
 ## Severity table
 
@@ -237,7 +241,7 @@ Outage check (status.x.ai):
 - Severity, Category, Impact
 - Account email, Subscription tier, Platform
 - System & app info, Bug description
-- Evidence: valid share link **or** screenshot (API may substitute sanitized logs). The line `screenshot: will attach in Report an issue` counts as screenshot provided.
+- Evidence: a share link with a nonempty share id, **or** a screenshot actually attached in this chat, **or** (API only) sanitized request/response/logs. A promise such as `screenshot: will attach in Report an issue` is **not** evidence. READY needs one real item now.
 - Billing / credits / refund issues also need invoice / receipt number **and** purchase channel (Web / App Store / Google Play / X / API). Channel picks Apple vs `accounts.x.ai/refund` vs X.
 - Paste contains no live API key, password, 2FA code, or session cookie.
 
@@ -258,9 +262,9 @@ Otherwise `Status: INCOMPLETE` and list the missing items.
 
 ## Hand-off language
 
-Pick **one** family. Do not mix.
+Emit **exactly one** Hand-off language block. Primary **Submit via** stays one family. If the same Grok model bug also happens on grok.com and X, keep one primary Submit via and put the second path only in Notes (the Grok-in-X block’s step 3 is that Notes exception, not a second family).
 
-**Grok consumer** (Chat, Imagine, Voice, Build, Companions, Bot, Connectors, Files):
+**Grok consumer** (Chat, Imagine, Voice, Build, Companions, Bot, Connectors, Files, Grokipedia, Accounts):
 
 ```
 Your report is ready. To submit:
