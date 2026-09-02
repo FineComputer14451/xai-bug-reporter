@@ -34,7 +34,7 @@
       --ok: #9dba8c;
     }
     * { box-sizing: border-box; }
-    html, body { margin: 0; background: var(--bg); color: var(--fg); font-family: \"IBM Plex Sans\", system-ui, sans-serif; }
+    html, body { margin: 0; background: var(--bg); color: var(--fg); font-family: "IBM Plex Sans", system-ui, sans-serif; }
     a { color: inherit; }
     header {
       border-bottom: 1px solid var(--line);
@@ -45,11 +45,11 @@
     .mark i { display: block; width: 4px; height: 20px; border-radius: 99px; background: var(--fg); }
     h1 { font-family: Syne, sans-serif; font-size: 1.15rem; margin: 0; }
     .sub { color: var(--subtle); font-size: 0.75rem; margin: 0.2rem 0 0; max-width: 42rem; line-height: 1.35; }
-    .pill { font-family: \"IBM Plex Mono\", monospace; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); border: 1px solid var(--line); border-radius: 999px; padding: 0.45rem 0.75rem; }
+    .pill { font-family: "IBM Plex Mono", monospace; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); border: 1px solid var(--line); border-radius: 999px; padding: 0.45rem 0.75rem; }
     .pill.ready { color: var(--ok); border-color: color-mix(in srgb, var(--ok) 40%, var(--line)); }
     main { display: grid; grid-template-columns: 1fr minmax(280px, 380px); gap: 0; max-width: 72rem; margin: 0 auto; }
     section { padding: 1.25rem; border-bottom: 1px solid var(--line); }
-    .n { font-family: \"IBM Plex Mono\", monospace; font-size: 11px; color: var(--subtle); letter-spacing: 0.12em; }
+    .n { font-family: "IBM Plex Mono", monospace; font-size: 11px; color: var(--subtle); letter-spacing: 0.12em; }
     h2 { font-size: 0.95rem; margin: 0.15rem 0 0.85rem; font-weight: 600; }
     .chips { display: flex; flex-wrap: wrap; gap: 0.4rem; }
     .chip {
@@ -66,7 +66,7 @@
     textarea { min-height: 88px; resize: vertical; }
     aside { border-left: 1px solid var(--line); background: var(--surface); padding: 1.25rem; }
     pre {
-      white-space: pre-wrap; word-break: break-word; font-family: \"IBM Plex Mono\", monospace;
+      white-space: pre-wrap; word-break: break-word; font-family: "IBM Plex Mono", monospace;
       font-size: 12px; line-height: 1.5; color: #d8d6cf; margin: 0.75rem 0 0;
     }
     .actions { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.75rem; }
@@ -76,7 +76,7 @@
     }
     .btn.primary { background: var(--fg); color: var(--bg); border-color: var(--fg); }
     .btn:disabled { opacity: 0.4; cursor: not-allowed; }
-    .sys { font-family: \"IBM Plex Mono\", monospace; font-size: 11px; color: var(--muted); display: grid; gap: 0.25rem; }
+    .sys { font-family: "IBM Plex Mono", monospace; font-size: 11px; color: var(--muted); display: grid; gap: 0.25rem; }
     .sys b { color: var(--subtle); font-weight: 500; min-width: 5.5rem; display: inline-block; }
     .gh { width: 44px; height: 44px; display: grid; place-items: center; color: var(--subtle); border-radius: 8px; }
     .gh:hover { background: var(--raised); color: var(--fg); }
@@ -183,261 +183,6 @@
       <pre id="out"></pre>
     </aside>
   </main>
-  <script>
-    const PRODUCTS = [
-      ["chat","Grok Chat","other"],
-      ["imagine","Imagine","imagine"],
-      ["voice","Voice","voice"],
-      ["build","Grok Build","build"],
-      ["companions","Companions","other"],
-      ["bot","Grok Bot","other"],
-      ["connectors","Connectors","other"],
-      ["files","Files","other"],
-      ["grokipedia","Grokipedia","other"],
-      ["accounts","Accounts / login","other"],
-      ["billing","Billing","billing"],
-      ["credits","Extra credits / Auto Top Up","billing"],
-      ["api","xAI API","api"],
-      ["console","Console","api"],
-      ["imagine-api","Imagine API","imagine"],
-      ["voice-api","Voice API","voice"],
-      ["grok-x","Grok in X","x"],
-      ["other","Other","other"]
-    ];
-    const SEVERITIES = [["critical","Critical"],["high","High"],["medium","Medium"],["low","Low"]];
-    const FREQS = [["always","Always"],["often","Often"],["once","Once"],["unknown","Unknown"]];
-    const PLATS = [["web","Web"],["ios","iOS"],["android","Android"],["x","X"],["api","API"],["console","Console"],["other","Other"]];
-    const TIERS = [["free","Free"],["super-grok","SuperGrok"],["super-grok-pro","SuperGrokPro"],["super-grok-heavy","SuperGrok Heavy"],["x-premium","X Premium"],["x-premium-plus","Premium+"],["api","API / Enterprise"],["unknown","Not sure"]];
-    const CATS = [
-      ["crash","Crash / freeze"],["performance","Performance / latency"],["ui","UI / rendering"],
-      ["billing","Authentication / subscription / billing"],["imagine","Image or video generation"],
-      ["voice","Voice / audio"],["build","Grok Build / generated apps"],
-      ["api","API / Console / developer tooling"],["quota","Quota / rate-limit"],
-      ["x","Grok in X / X integration"],["other","Other"]
-    ];
-    const INCHAT = [["yes","Yes"],["no","No"]];
-    const state = { product: "", severity: "", frequency: "", platform: "", subscription: "", category: "", inchat: "" };
-
-    function uaParse() {
-      const ua = navigator.userAgent || "";
-      let browser = "Unknown";
-      if (/Edg\\//.test(ua)) browser = "Edge";
-      else if (/Chrome\\//.test(ua)) browser = "Chrome";
-      else if (/Safari\\//.test(ua) && !/Chrome/.test(ua)) browser = "Safari";
-      else if (/Firefox\\//.test(ua)) browser = "Firefox";
-      let os = "Unknown";
-      if (/Windows/.test(ua)) os = "Windows";
-      else if (/Mac OS X/.test(ua)) os = "macOS";
-      else if (/Android/.test(ua)) os = "Android";
-      else if (/iPhone|iPad/.test(ua)) os = "iOS";
-      else if (/Linux/.test(ua)) os = "Linux";
-      return {
-        browser, os,
-        screen: `${screen.width}×${screen.height}`,
-        viewport: `${innerWidth}×${innerHeight}`,
-        language: navigator.language || "—",
-        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || "—",
-        userAgent: ua
-      };
-    }
-    const sys = uaParse();
-    document.getElementById("sys").innerHTML = [
-      ["Browser", sys.browser],["OS", sys.os],["Screen", sys.screen],
-      ["Viewport", sys.viewport],["Language", sys.language],["Timezone", sys.timezone]
-    ].map(([k,v]) => `<div><b>${k}</b> ${v}</div>`).join("");
-
-    function chips(el, items, key, onPick) {
-      el.innerHTML = items.map(([id,label]) => `<button type=\"button\" class=\"chip\" data-id=\"${id}\">${label}</button>`).join("");
-      el.addEventListener("click", (e) => {
-        const b = e.target.closest(".chip"); if (!b) return;
-        state[key] = b.dataset.id;
-        [...el.children].forEach(c => c.classList.toggle("on", c.dataset.id === state[key]));
-        if (onPick) onPick(b.dataset.id);
-        render();
-      });
-    }
-    function syncChips(el, id) {
-      [...el.children].forEach(c => c.classList.toggle("on", c.dataset.id === id));
-    }
-    chips(document.getElementById("products"), PRODUCTS, "product", (id) => {
-      const row = PRODUCTS.find(x => x[0] === id);
-      if (row) {
-        state.category = row[2];
-        syncChips(document.getElementById("categories"), state.category);
-      }
-    });
-    chips(document.getElementById("severities"), SEVERITIES, "severity");
-    chips(document.getElementById("frequencies"), FREQS, "frequency");
-    chips(document.getElementById("platforms"), PLATS, "platform");
-    chips(document.getElementById("tiers"), TIERS, "subscription");
-    chips(document.getElementById("categories"), CATS, "category");
-    chips(document.getElementById("inchat"), INCHAT, "inchat");
-
-    const $ = (id) => document.getElementById(id);
-    ["email","title","actual","expected","steps","share","screenshot","invoice","workaround","requestid"].forEach(id => $(id).addEventListener("input", render));
-
-    function lab(list, id) { return (list.find(x => x[0] === id) || [,"—"])[1]; }
-    function val(id) { return $(id).value.trim(); }
-    function emailOk(v) { return /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(v); }
-    function hasShareId(url) {
-      try {
-        const u = new URL(url);
-        const host = u.hostname.replace(/^www\\./, "").toLowerCase();
-        const ok = ["grok.com","grok.x.ai","grok.x.com","x.com","twitter.com"].includes(host);
-        if (!ok) return false;
-        const m = u.pathname.match(/\\/(?:i\\/grok\\/)?share\\/([A-Za-z0-9_-]+)$/);
-        return Boolean(m && m[1]);
-      } catch { return false; }
-    }
-    function hasEvidence() {
-      if (submitPath() === "api" && val("requestid").length > 0) return true;
-      return val("screenshot").length > 0 || hasShareId(val("share"));
-    }
-    function submitPath() {
-      if (state.product === "billing" || state.product === "credits") return "billing";
-      if (["api","console","imagine-api","voice-api"].includes(state.product)) return "api";
-      if (state.product === "grok-x") return "x";
-      return "report";
-    }
-
-    function format() {
-      const desc = [val("title"), val("actual") && `Actual: ${val("actual")}`, val("expected") && `Expected: ${val("expected")}`, lab(PRODUCTS, state.product) !== "—" && `Product: ${lab(PRODUCTS, state.product)}`].filter(Boolean).join("\\n") || "—";
-      const impact = [val("actual"), val("expected") && `Expected: ${val("expected")}`, state.frequency && `Frequency: ${lab(FREQS, state.frequency)}`].filter(Boolean).join(" ") || "—";
-      const ready = missingFields().length === 0;
-      const path = submitPath();
-      const via = path === "api" ? "support@x.ai (API Bug Report)"
-        : path === "billing" ? "receipt email + accounts.x.ai/refund"
-        : path === "x" ? "X Help Center / @premium"
-        : "Grok ⋮ Report an issue";
-      return [
-        "-----BEGIN REPORT-----",
-        `Status: ${ready ? "READY" : "INCOMPLETE"}`,"",
-        "=== TRIAGE ===",
-        `Product: ${lab(PRODUCTS, state.product)}`,
-        `Surface: ${lab(PLATS, state.platform)}`,
-        `Submit via: ${via}`,
-        `Severity: ${lab(SEVERITIES, state.severity)}`,
-        `Category: ${lab(CATS, state.category)}`,
-        `Impact: ${impact}`,"",
-        "=== REQUIRED ===",
-        `Account email: ${val("email") || "—"}`,
-        `Subscription tier: ${lab(TIERS, state.subscription)}`,
-        `Platform: ${lab(PLATS, state.platform)}`,
-        `System & app info: ${sys.os}; ${sys.browser}; ${sys.screen}`,
-        `Bug description: ${desc}`,"",
-        "Evidence:",
-        `  Conversation share link: ${val("share") || "—"}`,
-        `  Screenshot: ${val("screenshot") || "—"}`,
-        `  API request / response / logs (sanitized): ${val("requestid") ? "request id " + val("requestid") : "—"}`,"",
-        "=== PREFERRED ===",
-        `Steps to reproduce: ${val("steps") || "—"}`,
-        `Expected vs actual: ${[val("expected"), val("actual")].filter(Boolean).join(" / ") || "—"}`,"",
-        "=== BILLING (if applicable) ===",
-        `Invoice / receipt number: ${val("invoice") || "—"}`,
-        `Purchase channel (Web / App Store / Google Play / X / API): —`,"",
-        "=== NOTES ===",
-        `Workaround: ${val("workaround") || "—"}`,
-        `Frequency: ${lab(FREQS, state.frequency)}`,
-        `Reported from inside the chat where the bug occurred: ${lab(INCHAT, state.inchat)}`,
-        `Outage check (status.x.ai): —`,
-        "-----END REPORT-----"
-      ].join("\\n");
-    }
-
-    function missingFields() {
-      const missing = [];
-      if (!state.product) missing.push("Product");
-      if (!state.severity) missing.push("Severity");
-      if (!state.platform) missing.push("Platform");
-      if (!emailOk(val("email"))) missing.push("Account email");
-      if (!state.subscription) missing.push("Subscription tier");
-      if (val("title").length < 8 && val("actual").length < 8) missing.push("Bug description");
-      if (!hasEvidence()) missing.push("Evidence");
-      if ((state.product === "billing" || state.product === "credits") && !val("invoice")) missing.push("Invoice / receipt number");
-      return missing;
-    }
-
-    function render() {
-      const missing = missingFields();
-      const preferred = val("steps").length < 8;
-      const tracked = 8 + ((state.product === "billing" || state.product === "credits") ? 1 : 0);
-      const filled = tracked - missing.length - (preferred ? 1 : 0);
-      const pct = Math.max(0, Math.round((filled / (tracked + 1)) * 100));
-      const pill = $("score");
-      pill.textContent = `${pct}%`;
-      pill.classList.toggle("ready", missing.length === 0);
-      $("status").textContent = missing.length ? "INCOMPLETE" : "READY";
-      $("missing").textContent = missing.length
-        ? "Still missing required fields: " + missing.join(", ")
-        : (preferred ? "Ready. Preferred still empty: Steps to reproduce." : "Ready to submit via the official path.");
-      const path = submitPath();
-      $("submit-hint").innerHTML = path === "api"
-        ? "API / Console / Imagine API / Voice API: email support@x.ai with subject “API Bug Report”. Not a Grok-app inbox. Hangouts (not a ticket): <a href=\"https://discord.gg/x-ai\">xAI API Discord</a>."
-        : path === "billing"
-        ? "Billing: reply to your receipt email. Web/Play refunds: <a href=\"https://accounts.x.ai/refund\">accounts.x.ai/refund</a>. Apple IAP uses Apple. Large invoices are often SuperGrok Heavy, not API."
-        : path === "x"
-        ? "Grok in X / X service: xAI does not operate X. Use <a href=\"https://help.x.com/\">X Help Center</a> or <a href=\"https://x.com/premium\">@premium</a>. X Premium refunds: <a href=\"https://help.x.com/forms/x-refund-request\">X refund form</a>. If the same model bug happens on grok.com, also use ⋮ Report an issue there."
-        : "Grok Chat / Imagine / Voice / Build / Companions: paste into Grok → ⋮ Report an issue. Do not email support@x.ai. Hangouts (not a ticket): <a href=\"https://discord.gg/kqCc86jM55\">Grok Community</a>.";
-      $("mail").disabled = false;
-      $("mail").title = path === "api"
-        ? "Opens a draft to support@x.ai and copies the full report"
-        : "Only for xAI API / Console / Imagine API / Voice API. Click for how to submit instead.";
-      $("out").textContent = format();
-    }
-
-    $("copy").onclick = async () => {
-      await navigator.clipboard.writeText(format());
-      $("copy").textContent = "Copied";
-      setTimeout(() => $("copy").textContent = "Copy", 1200);
-    };
-    function copyText(text) {
-      try {
-        const ta = document.createElement("textarea");
-        ta.value = text;
-        ta.setAttribute("readonly", "");
-        ta.style.position = "fixed";
-        ta.style.left = "-9999px";
-        document.body.appendChild(ta);
-        ta.select();
-        document.execCommand("copy");
-        ta.remove();
-      } catch (_) {}
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(text).catch(() => {});
-      }
-    }
-    function mailtoHrefFor(full) {
-      const sub = encodeURIComponent("API Bug Report: " + (val("title") || "Incident"));
-      const prefix = "Paste the full report from your clipboard below if this draft is truncated.\\n\\n";
-      let raw = prefix + full;
-      const build = (body) => "mailto:support@x.ai?subject=" + sub + "&body=" + encodeURIComponent(body);
-      let href = build(raw);
-      while (href.length > 1800 && raw.length > 120) {
-        raw = raw.slice(0, Math.max(80, raw.length - 220)) + "\\n\\n[truncated — paste the copied report]";
-        href = build(raw);
-      }
-      return href;
-    }
-    $("mail").onclick = () => {
-      if (submitPath() !== "api") {
-        alert("Email API is only for xAI API, Console, Imagine API, or Voice API.\\n\\nFor Grok apps: Copy, then paste into Grok → ⋮ Report an issue.\\nFor billing: reply to the receipt email.");
-        return;
-      }
-      const full = format();
-      copyText(full);
-      const href = mailtoHrefFor(full);
-      $("mail").textContent = "Copied — opening mail";
-      setTimeout(() => $("mail").textContent = "Email API", 1600);
-      window.location.href = href;
-    };
-    $("dl").onclick = () => {
-      const blob = new Blob([format()], { type: "text/plain" });
-      const a = document.createElement("a");
-      a.href = URL.createObjectURL(blob);
-      a.download = "xai-bug-report.txt";
-      a.click();
-    };
-    render();
-  </script>
+  <script src="desk.js" defer></script>
 </body>
 </html>
