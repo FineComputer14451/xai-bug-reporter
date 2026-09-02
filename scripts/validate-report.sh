@@ -70,7 +70,7 @@ steps_value() {
       continue
     fi
     if [[ $grab -eq 1 ]]; then
-      if [[ "$line" =~ ^[[:space:]]*[Ee]vidence: ]]; then
+      if [[ "$line" =~ ^[[:space:]]*([Ee]vidence:|[Ee]xpected[[:space:]]+vs|[Ee][Qq][Uu][Aa][Ll]{2}[[:space:]]|[-=]{3}) ]]; then
         break
       fi
       buf+=$'\n'"$line"
