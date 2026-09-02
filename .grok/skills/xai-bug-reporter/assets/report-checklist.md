@@ -1,45 +1,57 @@
 # xAI / Grok Bug Report Checklist
 
+Same field labels and section order as `SKILL.md`. Fill in Chat. Do not run scripts.
+
+Hints in brackets are not part of the paste labels.
+
 ```
 -----BEGIN REPORT-----
 Status: READY | INCOMPLETE
 
 === TRIAGE ===
-Product: [Chat / Imagine / Voice / Build / Companions / Bot / Grokipedia / Accounts / Billing / API / Console / Imagine API / Voice API / Grok in X / Other]
-Surface: [grok.com / iOS / Android / x.com / console.x.ai / api.x.ai / other]
-Submit via: [Report an issue / receipt email + refund form / support@x.ai / X Help Center]
-Severity: [Critical / High / Medium / Low]
-Category: [Crash / freeze · Performance / latency · UI / rendering · Authentication / subscription / billing · Image or video generation · Voice / audio · Grok Build / generated apps · API / Console / developer tooling · Quota / rate-limit · Grok in X / X integration · Other]
-Impact: [one or two sentences]
+Product:
+Surface:
+Submit via:
+Severity:
+Category:
+Impact:
 
 === REQUIRED ===
 Account email:
 Subscription tier:
-Platform: [Web / iOS / Android / X / API / Console / Other]
+Platform:
 System & app info:
-  - Device / OS:
-  - Grok app or browser version / SDK:
-  - Additional (GPU, model name, endpoint):
 Bug description:
 
 Evidence:
-  Conversation share link (prefer current chat):
-  Screenshot attached / available: [yes/no]
+  Conversation share link:
+  Screenshot:
   API request / response / logs (sanitized):
 
 === PREFERRED ===
 Steps to reproduce:
-  1.
-  2.
-  3.
+Expected vs actual:
 
 === BILLING (if applicable) ===
 Invoice / receipt number:
-Purchase channel: [Web / App Store / Google Play / X / API]
+Purchase channel (Web / App Store / Google Play / X / API):
 
 === NOTES ===
 Workaround:
-Frequency: [always / intermittent / once]
-Reported from inside the chat where the bug occurred: [yes/no]
+Frequency:
+Reported from inside the chat where the bug occurred:
+Outage check (status.x.ai):
 -----END REPORT-----
 ```
+
+Product hint: Chat / Imagine / Voice / Build / Companions / Bot / Connectors / Files / Grokipedia / Accounts / Billing / Extra credits / API / Console / Imagine API / Voice API / Grok in X / Other
+
+Surface hint: grok.com / iOS / Android / x.com / console.x.ai / api.x.ai / other
+
+Submit via hint: Report an issue / receipt email + refund form / Apple IAP refund / support@x.ai / X Help Center
+
+Severity hint: Critical / High / Medium / Low
+
+READY is blocked while any required field is empty, whitespace-only, the share URL has no share id, or the paste still contains a live secret.
+
+Billing / credits READY also needs invoice / receipt number **and** purchase channel (Web / App Store / Google Play / X / API).

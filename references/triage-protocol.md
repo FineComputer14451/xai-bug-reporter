@@ -4,9 +4,11 @@
 
 Name the product and surface before scoring severity.
 
-Examples: Grok Chat on grok.com · Grok Imagine on iOS · Grok Voice on Android · Grok Build on web · Companions on iOS · xAI API on console.x.ai · Imagine API · Voice API · Grok in X on x.com · SuperGrok billing on web.
+Examples: Grok Chat on grok.com · Grok Imagine on iOS · Grok Voice on Android · Grok Build on web · Companions on iOS · Connectors on grok.com · Files on web · Grok Bot · xAI API on console.x.ai · Imagine API · Voice API · Grok in X on x.com · SuperGrok billing on web · Extra credits on grok.com.
 
 If unknown, ask. Do not assume grok.com.
+
+If the user describes a total outage, tell them to look at https://status.x.ai (do not fetch). Still score and still prepare a report.
 
 ## 1. Severity scoring
 
@@ -29,6 +31,7 @@ NEVER run bash. Score from the description in Chat; suggestions only.
 - Image or video generation
 - Voice / audio
 - Grok Build / generated apps
+- Connectors / files
 - API / Console / developer tooling
 - Quota / rate-limit
 - Grok in X / X integration
@@ -45,3 +48,4 @@ One or two sentences: what the user cannot do, how often it happens, and whether
 - Never override a user’s explicit severity choice; document disagreement if your suggestion differs.
 - Always emit a `=== TRIAGE ===` block in the finished report, including Product and Surface.
 - Route the hand-off from Product + Surface using `references/official-process.md`. Never mix Grok-app, API, X, and billing inboxes.
+- A status.x.ai incident can support Critical / High wording. It is not itself a submit path.

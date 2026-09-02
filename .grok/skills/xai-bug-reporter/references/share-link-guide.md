@@ -17,7 +17,8 @@ Do not invent exact control labels.
 
 - Prefer a share link of the **current** conversation when the bug happened here.
 - Structural host + nonempty share-id check only. NEVER run bash or curl.
-- A URL without a share id (`https://grok.com/`, `https://grok.com/share/`) is invalid.
+- Check in this order: scheme `https`, host in the allow-list, path is `/share/<id>` or `/i/grok/share/<id>`, id matches `[A-Za-z0-9_-]+` and is nonempty.
+- A URL without a share id (`https://grok.com/`, `https://grok.com/share/`) is invalid. Treat it as missing evidence, not as a valid link.
 - If the user says the link is expired, private, or broken, request a fresh share or a screenshot instead.
 - Never invent or guess a share URL.
 - Remind the user that shared chats may be visible to anyone with the link; they can revoke later.
