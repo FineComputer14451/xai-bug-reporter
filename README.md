@@ -23,7 +23,7 @@ Install on [grok.com/skills](https://grok.com/skills), then say “report a bug�
 
 ## Install in Grok Chat
 
-**Primary host** is Grok Chat — grok.com, iOS, and Android ([Grok Skills](https://x.ai/news/grok-skills)). No bash. The agent follows `SKILL.md` and the supporting `references/` + `assets/` files when those are in the upload.
+**Primary host** is Grok Chat — grok.com, iOS, and Android ([Grok Skills](https://x.ai/news/grok-skills)). No bash. Skill version **1.4.0**. The agent follows `SKILL.md` and the supporting `references/` + `assets/` files when those are in the upload.
 
 ### grok.com (web)
 
@@ -234,7 +234,8 @@ Always collect (or confirm) before declaring the report ready:
 - System & app info (OS, device model, Grok app or browser version)
 - Clear description of the problem
 - Evidence: conversation **share link** with a nonempty share id (especially of the current chat) **or** screenshot
-- Billing only: invoice / receipt number
+- Product, Surface, and Submit-via path
+- Billing / credits only: invoice / receipt number **and** purchase channel
 
 Strongly preferred (do not block READY): steps to reproduce.
 
@@ -280,10 +281,14 @@ xai-bug-reporter/
 │   ├── report-checklist.md       # Human-facing template
 │   └── report.env.example        # KEY=VALUE sample for scripts
 ├── references/
-│   ├── official-process.md       # Canonical process notes
+│   ├── official-process.md       # Canonical process notes (rechecked 2026-09-02)
 │   ├── triage-protocol.md        # Severity table + categories
 │   ├── share-link-guide.md       # How to create / validate share links
-│   └── submission-guide.md       # Automation boundaries
+│   ├── submission-guide.md       # Automation boundaries
+│   ├── question-bank.md          # First pairs per product family
+│   ├── report-checklist.md       # Paste twin (also in assets/)
+│   ├── report.env.example        # Field crib (CLI twin in assets/)
+│   └── LICENSE
 ├── scripts/
 │   ├── assemble-report.sh
 │   ├── collect-platform-info.sh
