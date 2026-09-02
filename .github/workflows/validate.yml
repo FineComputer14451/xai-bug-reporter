@@ -63,7 +63,8 @@ jobs:
           head -1 SKILL.md | grep -q '^---$'
           grep -q '^name: xai-bug-reporter$' SKILL.md
           grep -q '^description:' SKILL.md
-          grep -q '^user-invocable: true$' SKILL.md
+          # v1.4.0 keeps user-invocable under metadata: (Grok Chat skill format)
+          grep -qE '^[[:space:]]*user-invocable: true$' SKILL.md
           # description should mention bug/report triggers
           grep -qiE 'report a bug|report an issue|reach a human' SKILL.md
           grep -q '/xai-bug-reporter' SKILL.md
