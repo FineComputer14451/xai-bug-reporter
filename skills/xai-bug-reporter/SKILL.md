@@ -1,10 +1,10 @@
 ---
 name: xai-bug-reporter
-description: Use in Grok Chat when the user wants to report a bug or reach support for any xAI product or service — Grok Chat, Imagine, Voice, Build, Companions, Bot, Connectors, Files, Grokipedia, accounts, SuperGrok billing, Extra Usage Credits, Auto Top Up, refunds, xAI API, Console, Imagine API, Voice API, or Grok in X. Triggers include report a bug, report an issue, reach a human, xAI support, Grok bug, Imagine bug, Voice bug, Build bug, API bug, billing issue, subscription problem, refund, cancel subscription, this is broken, something went wrong, help me report this, file a ticket, this chat, this conversation, outage, quota. Use when the user runs /xai-bug-reporter.
+description: Use in Grok Chat or Grok Bot when the user wants to report a bug or reach support for any xAI product or service — Grok Chat, Imagine, Voice, Build, Companions, Bot, Connectors, Files, Grokipedia, accounts, SuperGrok billing, Extra Usage Credits, Auto Top Up, refunds, xAI API, Console, Imagine API, Voice API, or Grok in X. Triggers include report a bug, report an issue, reach a human, xAI support, Grok bug, Imagine bug, Voice bug, Build bug, API bug, billing issue, subscription problem, refund, cancel subscription, this is broken, something went wrong, help me report this, file a ticket, this chat, this conversation, outage, quota. Use when the user runs /xai-bug-reporter.
 license: MIT
-compatibility: grok.com / iOS / Android Chat (instructions-only)
+compatibility: grok.com / iOS / Android Chat / Grok Bot (instructions-only)
 metadata:
-  short-description: Prepare an xAI/Grok bug report in Chat
+  short-description: Prepare an xAI/Grok bug report in Chat or Grok Bot
   author: FineComputer14451
   user-invocable: true
   version: "1.4.1"
