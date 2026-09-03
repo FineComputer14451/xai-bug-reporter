@@ -1,0 +1,29 @@
+{
+  "name": "xai-bug-reporter",
+  "version": "1.4.1",
+  "description": "Independent (not official xAI) plugin that prepares paste-ready xAI/Grok bug reports. Does not file tickets.",
+  "author": {
+    "name": "FineComputer14451"
+  },
+  "license": "MIT",
+  "keywords": [
+    "xai",
+    "grok",
+    "grok-bot",
+    "bug-report",
+    "support"
+  ],
+  "skills": "skills",
+  "agents": "agents",
+  "interface": {
+    "displayName": "xAI Bug Reporter",
+    "shortDescription": "Independent paste-ready xAI/Grok bug reports. Not official xAI. Does not file tickets.",
+    "developerName": "FineComputer14451",
+    "category": "Productivity",
+    "websiteURL": "https://github.com/FineComputer14451/xai-bug-reporter",
+    "capabilities": [
+      "Interactive",
+      "Read"
+    ]
+  }
+}

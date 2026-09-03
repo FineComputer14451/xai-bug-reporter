@@ -1,0 +1,16 @@
+{
+  "name": "xai-bug-reporter-marketplace",
+  "owner": {
+    "name": "FineComputer14451"
+  },
+  "metadata": {
+    "description": "Independent xAI/Grok bug-reporter plugin for Grok Bot / Cursor. Does not file tickets."
+  },
+  "plugins": [
+    {
+      "name": "xai-bug-reporter",
+      "source": "./",
+      "description": "Prepare paste-ready xAI/Grok bug reports for official Report an issue, billing, API, and X Help Center paths. Does not file tickets."
+    }
+  ]
+}

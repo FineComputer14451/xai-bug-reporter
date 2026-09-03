@@ -1,0 +1,20 @@
+{
+  "name": "xai-bug-reporter",
+  "version": "1.4.1",
+  "description": "Prepare paste-ready xAI/Grok bug reports for official Report an issue, billing, API, and X Help Center paths. Does not file tickets.",
+  "author": {
+    "name": "FineComputer14451"
+  },
+  "license": "MIT",
+  "repository": "https://github.com/FineComputer14451/xai-bug-reporter",
+  "homepage": "https://finecomputer14451.github.io/xai-bug-reporter",
+  "keywords": [
+    "xai",
+    "grok",
+    "grok-bot",
+    "bug-report",
+    "support"
+  ],
+  "skills": "skills",
+  "agents": "agents"
+}

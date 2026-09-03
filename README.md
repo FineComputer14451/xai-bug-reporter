@@ -48,6 +48,18 @@ Do not invent exact Android Settings labels. Bash scripts do not run in Chat; th
 
 ---
 
+## Install in Grok Bot
+
+Cursor / Grok Bot plugin packaging lives in [`.cursor-plugin/plugin.json`](.cursor-plugin/plugin.json) (authoritative). [`.grok-plugin/plugin.json`](.grok-plugin/plugin.json) is a thin compatibility mirror only.
+
+- **Import from this repo:** https://github.com/FineComputer14451/xai-bug-reporter
+- **Public listing** needs review at https://cursor.com/marketplace/publish
+- The plugin **does not file tickets**. You still paste via ⋮ **Report an issue**, billing receipt / refund email, `support@x.ai` (API), or [X Help Center](https://help.x.com/).
+
+Independent project — **not affiliated with, endorsed by, sponsored by, or officially connected to xAI**.
+
+---
+
 ## Companion web desk
 
 Live desk: **[xAI Bug Reporter](https://finecomputer14451.github.io/xai-bug-reporter/)**
@@ -274,6 +286,16 @@ xai-bug-reporter/
 │   ├── xai-bug-reporter.md
 │   ├── REFERENCES.md
 │   └── HANDOFF-TEMPLATES.md
+├── .cursor-plugin/
+│   ├── plugin.json               # Authoritative Cursor / Grok Bot plugin manifest
+│   └── marketplace.json          # Single-plugin marketplace (source ./)
+├── .grok-plugin/
+│   └── plugin.json               # Thin Grok compatibility mirror (non-authoritative)
+├── skills/xai-bug-reporter/      # Plugin skill copy (no scripts/)
+│   ├── SKILL.md
+│   └── references/
+├── agents/
+│   └── xai-bug-reporter.md       # Plugin agent (points at skills/xai-bug-reporter)
 ├── .github/
 │   ├── dependabot.yml            # Weekly Actions updates
 │   └── workflows/validate.yml
