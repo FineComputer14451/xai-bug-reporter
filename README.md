@@ -1,11 +1,14 @@
 # xai-bug-reporter
 
-**Grok Chat skill** (grok.com, iOS, Android) that encodes the official xAI / Grok bug-reporting and human-support process.
+Grok Chat skill **and** Grok Bot / Cursor plugin for the official xAI / Grok bug-reporting and human-support process.
 
-It guides the conversation through formal triage, evidence collection, and a paste-ready report for the in-product **Report an issue** flow — without inventing support channels, running scripts, or claiming to file tickets on xAI servers.
+It guides the conversation through formal triage, evidence collection, and a paste-ready report — without inventing support channels, running scripts, or claiming to file tickets on xAI servers.
 
-Install on [grok.com/skills](https://grok.com/skills), then say “report a bug” in the chat where it happened. Companion desk: [xAI Bug Reporter](https://finecomputer14451.github.io/xai-bug-reporter).
+- **Grok Bot / Cursor:** import this repo or submit at [cursor.com/marketplace/publish](https://cursor.com/marketplace/publish). Plugin ships `skills/` + `agents/`. No MCP. Does not file tickets.
+- **Grok Chat** (grok.com, iOS, Android): install on [grok.com/skills](https://grok.com/skills), then say “report a bug” in the chat where it happened.
+- Companion desk: [xAI Bug Reporter](https://finecomputer14451.github.io/xai-bug-reporter).
 
+[![Grok Bot](https://img.shields.io/badge/Grok_Bot-plugin-0C0C0D)](https://cursor.com/marketplace/publish)
 [![Grok Chat](https://img.shields.io/badge/Grok_Chat-skills-0C0C0D?logo=x&logoColor=white)](https://grok.com/skills)
 [![SKILL.md](https://img.shields.io/badge/SKILL.md-raw-222?logo=markdown&logoColor=white)](https://github.com/FineComputer14451/xai-bug-reporter/raw/main/SKILL.md)
 [![Grok Community](https://img.shields.io/badge/Discord-Grok_Community-5865F2?logo=discord&logoColor=white)](https://discord.gg/kqCc86jM55)
@@ -21,9 +24,23 @@ Install on [grok.com/skills](https://grok.com/skills), then say “report a bug�
 
 ---
 
+## Install in Grok Bot
+
+Cursor / Grok Bot plugin. Authoritative manifest: [`.cursor-plugin/plugin.json`](.cursor-plugin/plugin.json). Thin compatibility mirror: [`.grok-plugin/plugin.json`](.grok-plugin/plugin.json).
+
+Ships **one skill** (`skills/xai-bug-reporter/`) and **one agent** (`agents/xai-bug-reporter.md`). No MCP, no connector, no `scripts/` in the plugin skill.
+
+- **Import from this repo:** https://github.com/FineComputer14451/xai-bug-reporter
+- **Public listing** needs review at https://cursor.com/marketplace/publish
+- Then say “report a bug” in Grok Bot. The plugin **does not file tickets**. You still paste via ⋮ **Report an issue**, billing receipt / refund email, `support@x.ai` (API), or [X Help Center](https://help.x.com/).
+
+Independent project — **not affiliated with, endorsed by, sponsored by, or officially connected to xAI**.
+
+---
+
 ## Install in Grok Chat
 
-**Primary host** is Grok Chat — grok.com, iOS, and Android ([Grok Skills](https://x.ai/news/grok-skills)). No bash. Skill version **1.4.1**. The agent follows `SKILL.md` and the supporting `references/` + `assets/` files when those are in the upload.
+Grok Chat host — grok.com, iOS, and Android ([Grok Skills](https://x.ai/news/grok-skills)). No bash. Skill version **1.4.1**. The agent follows `SKILL.md` and the supporting `references/` + `assets/` files when those are in the upload.
 
 ### grok.com (web)
 
@@ -45,18 +62,6 @@ Skills are account-scoped. Install once, then use in the Grok app chat.
 - Install on grok.com while signed into the same account.
 
 Do not invent exact Android Settings labels. Bash scripts do not run in Chat; the `SKILL.md` body is enough.
-
----
-
-## Install in Grok Bot
-
-Cursor / Grok Bot plugin packaging lives in [`.cursor-plugin/plugin.json`](.cursor-plugin/plugin.json) (authoritative). [`.grok-plugin/plugin.json`](.grok-plugin/plugin.json) is a thin compatibility mirror only.
-
-- **Import from this repo:** https://github.com/FineComputer14451/xai-bug-reporter
-- **Public listing** needs review at https://cursor.com/marketplace/publish
-- The plugin **does not file tickets**. You still paste via ⋮ **Report an issue**, billing receipt / refund email, `support@x.ai` (API), or [X Help Center](https://help.x.com/).
-
-Independent project — **not affiliated with, endorsed by, sponsored by, or officially connected to xAI**.
 
 ---
 
