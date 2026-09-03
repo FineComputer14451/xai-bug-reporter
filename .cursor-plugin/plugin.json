@@ -16,5 +16,6 @@
     "support"
   ],
   "skills": "skills",
-  "agents": "agents"
+  "agents": "agents",
+  "logo": "docs/favicon.svg"
 }
